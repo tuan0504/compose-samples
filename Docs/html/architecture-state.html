@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phase 3 — Architecture & State | Android Compose Samples</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+
+<aside>
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-icon">🏗</div>
+      <div>
+        <h2>Android Compose</h2>
+        <p>Learning Guide</p>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-section-label">Phases</div>
+      <a class="nav-item" href="theming-styles-guide.html">
+        <span>🎨</span> Phase 2 — Theming
+      </a>
+      <a class="nav-item" href="design-system.html">
+        <span>🧩</span> Phase 2 — Design System
+      </a>
+      <a class="nav-item active" href="architecture-state.html">
+        <span>🏗</span> Phase 3 — Architecture
+      </a>
+      <a class="nav-item" href="navigation.html">
+        <span>🧭</span> Phase 4 — Navigation
+      </a>
+      <a class="nav-item" href="reusable-components.html">
+        <span>♻️</span> Phase 5 — Components
+      </a>
+      <a class="nav-item" href="testing-performance.html">
+        <span>🧪</span> Phase 6 — Testing
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">On This Page</div>
+      <a class="nav-item" href="#overview">
+        <span>📊</span> Overview
+      </a>
+      <a class="nav-item" href="#core-pattern">
+        <span>🔄</span> Core Pattern
+      </a>
+      <a class="nav-item" href="#uistate-patterns">
+        <span>📐</span> UiState Patterns
+      </a>
+      <a class="nav-item" href="#flow-combination">
+        <span>🌊</span> Flow Combination
+      </a>
+      <a class="nav-item" href="#repository">
+        <span>💾</span> Repository Pattern
+      </a>
+      <a class="nav-item" href="#consuming-state">
+        <span>⚡</span> Consuming State
+      </a>
+      <a class="nav-item" href="#summary">
+        <span>✅</span> Summary
+      </a>
+    </div>
+  </nav>
+</aside>
+
+<main>
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">📖 Phase 3 · Day 2–3</div>
+    <h1>Architecture & State</h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="dot"></span> How does data flow?</div>
+      <div class="hero-meta-item">6 apps compared</div>
+      <div class="hero-meta-item">4 UiState patterns</div>
+      <div class="hero-meta-item"><span class="badge badge-intermediate">Intermediate</span></div>
+    </div>
+  </div>
+
+  <!-- Overview -->
+  <section id="overview">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div>
+        <h2>Overview</h2>
+        <p>All six apps follow <strong>MVVM</strong> using Jetpack ViewModel + Kotlin StateFlow. The differences lie in how complex the state model is, how many flows are combined, and whether a domain (UseCase) layer sits between repository and ViewModel.</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>App</th>
+            <th>UiState style</th>
+            <th>Flow complexity</th>
+            <th>Domain layer</th>
+            <th>DI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>JetLagged</td>
+            <td><code>data class</code> (static)</td>
+            <td>None — no flows</td>
+            <td><span class="no-tag">No</span></td>
+            <td><span class="no-tag">No</span></td>
+          </tr>
+          <tr>
+            <td>Reply</td>
+            <td><code>data class</code> + <code>.copy()</code></td>
+            <td>Single flow (emails)</td>
+            <td><span class="no-tag">No</span></td>
+            <td><span class="no-tag">No</span></td>
+          </tr>
+          <tr>
+            <td>JetNews</td>
+            <td><code>sealed interface</code> (NoPosts / HasPosts)</td>
+            <td>2 flows combined</td>
+            <td><span class="no-tag">No</span></td>
+            <td>Manual factory</td>
+          </tr>
+          <tr>
+            <td>Jetchat</td>
+            <td>Simple <code>data class</code></td>
+            <td>SharedFlow for events</td>
+            <td><span class="no-tag">No</span></td>
+            <td><span class="no-tag">No</span></td>
+          </tr>
+          <tr>
+            <td>Jetsnack</td>
+            <td>Local state + <code>StateFlow</code> per screen</td>
+            <td>Medium</td>
+            <td><span class="no-tag">No</span></td>
+            <td><span class="no-tag">No</span></td>
+          </tr>
+          <tr>
+            <td>Jetcaster</td>
+            <td><code>@Immutable data class</code> + <code>sealed interface</code> actions</td>
+            <td>7 flows combined</td>
+            <td><span class="yes-tag">Yes (UseCases)</span></td>
+            <td><span class="yes-tag">Hilt</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Core Pattern -->
+  <section id="core-pattern">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div>
+        <h2>The Core Pattern (All Apps)</h2>
+        <p>Every app follows the same 4-step data flow. The key rule: <strong>composables never own business logic</strong>. They observe state and fire events upward.</p>
+      </div>
+    </div>
+
+    <div class="flowchart">
+      <div><span class="q">Repository / Data source</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;<span class="desc">(Flow / suspend fun)</span></div>
+      <div><span class="q">ViewModel</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;<span class="desc">(StateFlow&lt;UiState&gt;)</span></div>
+      <div><span class="ans">collectAsStateWithLifecycle()</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;<span class="desc">(State&lt;UiState&gt;)</span></div>
+      <div><span class="q">Composable</span> <span class="desc">(renders UI)</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;<span class="desc">(user event / callback)</span></div>
+      <div><span class="q">ViewModel event handler</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;<span class="desc">(updates MutableStateFlow)</span></div>
+      <div><span class="desc">[cycle repeats]</span></div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- UiState Patterns -->
+  <section id="uistate-patterns">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div>
+        <h2>UiState Modelling Patterns</h2>
+        <p>Four patterns from simplest to most structured — pick based on screen complexity.</p>
+      </div>
+    </div>
+
+    <h3>Pattern 1 — Static data class (JetLagged)</h3>
+    <p>No repository, no flow collection. State is created once and never changes. Good baseline before complexity is added.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// JetLaggedHomeScreenViewModel.kt</span>
+<span class="kw">class</span> <span class="cls">JetLaggedHomeScreenViewModel</span> : <span class="cls">ViewModel</span>() {
+    <span class="kw">val</span> uiState: <span class="cls">StateFlow</span>&lt;<span class="cls">JetLaggedHomeScreenState</span>&gt; =
+        <span class="cls">MutableStateFlow</span>(<span class="cls">JetLaggedHomeScreenState</span>())
+}</pre>
+    </div>
+
+    <h3>Pattern 2 — Mutable data class with <code>.copy()</code> (Reply)</h3>
+    <p>All screen states share the same fields (loading, error, data co-exist on the same class). Updates are immutable via <code>.copy()</code>.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// ReplyHomeViewModel.kt</span>
+<span class="kw">private val</span> _uiState = <span class="cls">MutableStateFlow</span>(<span class="cls">ReplyHomeUIState</span>(loading = <span class="kw">true</span>))
+<span class="kw">val</span> uiState: <span class="cls">StateFlow</span>&lt;<span class="cls">ReplyHomeUIState</span>&gt; = _uiState
+
+<span class="kw">data class</span> <span class="cls">ReplyHomeUIState</span>(
+    <span class="kw">val</span> emails: <span class="cls">List</span>&lt;<span class="cls">Email</span>&gt; = <span class="fn">emptyList</span>(),
+    <span class="kw">val</span> selectedEmails: <span class="cls">Set</span>&lt;<span class="cls">Long</span>&gt; = <span class="fn">emptySet</span>(),
+    <span class="kw">val</span> openedEmail: <span class="cls">Email</span>? = <span class="kw">null</span>,
+    <span class="kw">val</span> isDetailOnlyOpen: <span class="cls">Boolean</span> = <span class="kw">false</span>,
+    <span class="kw">val</span> loading: <span class="cls">Boolean</span> = <span class="kw">false</span>,
+    <span class="kw">val</span> error: <span class="cls">String</span>? = <span class="kw">null</span>,
+)
+
+<span class="cmt">// State updates via .copy()</span>
+<span class="kw">fun</span> <span class="fn">setOpenedEmail</span>(emailId: <span class="cls">Long</span>, contentType: <span class="cls">ReplyContentType</span>) {
+    <span class="kw">val</span> email = uiState.value.emails.<span class="fn">find</span> { it.id == emailId }
+    _uiState.value = _uiState.value.<span class="fn">copy</span>(
+        openedEmail = email,
+        isDetailOnlyOpen = contentType == <span class="cls">ReplyContentType</span>.SINGLE_PANE,
+    )
+}</pre>
+    </div>
+
+    <div class="info-box when">
+      <div class="info-box-title">When to use</div>
+      <p>When all screen states share the same fields — loading, error, and data all co-exist on the same class.</p>
+    </div>
+
+    <h3>Pattern 3 — Internal state → public sealed UiState (JetNews)</h3>
+    <p>Separates <em>internal raw state</em> from the <em>public typed state</em> exposed to the UI. The <code>HasPosts</code> type guarantees <code>postsFeed</code> is non-null at compile time.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// Internal — raw, mutable, easy to update</span>
+<span class="kw">private data class</span> <span class="cls">HomeViewModelState</span>(
+    <span class="kw">val</span> postsFeed: <span class="cls">PostsFeed</span>? = <span class="kw">null</span>,
+    <span class="kw">val</span> favorites: <span class="cls">Set</span>&lt;<span class="cls">String</span>&gt; = <span class="fn">emptySet</span>(),
+    <span class="kw">val</span> isLoading: <span class="cls">Boolean</span> = <span class="kw">false</span>,
+    <span class="kw">val</span> errorMessages: <span class="cls">List</span>&lt;<span class="cls">ErrorMessage</span>&gt; = <span class="fn">emptyList</span>(),
+    <span class="kw">val</span> searchInput: <span class="cls">String</span> = <span class="str">""</span>,
+) {
+    <span class="kw">fun</span> <span class="fn">toUiState</span>(): <span class="cls">HomeUiState</span> = <span class="kw">if</span> (postsFeed == <span class="kw">null</span>) {
+        <span class="cls">HomeUiState</span>.<span class="cls">NoPosts</span>(isLoading, errorMessages, searchInput)
+    } <span class="kw">else</span> {
+        <span class="cls">HomeUiState</span>.<span class="cls">HasPosts</span>(postsFeed, favorites, isLoading, errorMessages, searchInput)
+    }
+}
+
+<span class="cmt">// Public — sealed, UI exhausts all cases with when()</span>
+<span class="kw">sealed interface</span> <span class="cls">HomeUiState</span> {
+    <span class="kw">val</span> isLoading: <span class="cls">Boolean</span>
+    <span class="kw">val</span> errorMessages: <span class="cls">List</span>&lt;<span class="cls">ErrorMessage</span>&gt;
+    <span class="kw">val</span> searchInput: <span class="cls">String</span>
+
+    <span class="kw">data class</span> <span class="cls">NoPosts</span>(
+        <span class="kw">override val</span> isLoading: <span class="cls">Boolean</span>,
+        <span class="kw">override val</span> errorMessages: <span class="cls">List</span>&lt;<span class="cls">ErrorMessage</span>&gt;,
+        <span class="kw">override val</span> searchInput: <span class="cls">String</span>,
+    ) : <span class="cls">HomeUiState</span>
+
+    <span class="kw">data class</span> <span class="cls">HasPosts</span>(
+        <span class="kw">val</span> postsFeed: <span class="cls">PostsFeed</span>,          <span class="cmt">// non-null guaranteed here</span>
+        <span class="kw">val</span> favorites: <span class="cls">Set</span>&lt;<span class="cls">String</span>&gt;,
+        <span class="kw">override val</span> isLoading: <span class="cls">Boolean</span>,
+        <span class="kw">override val</span> errorMessages: <span class="cls">List</span>&lt;<span class="cls">ErrorMessage</span>&gt;,
+        <span class="kw">override val</span> searchInput: <span class="cls">String</span>,
+    ) : <span class="cls">HomeUiState</span>
+}
+
+<span class="cmt">// Exposed via stateIn</span>
+<span class="kw">val</span> uiState = viewModelState
+    .<span class="fn">map</span>(<span class="cls">HomeViewModelState</span>::<span class="fn">toUiState</span>)
+    .<span class="fn">stateIn</span>(viewModelScope, <span class="cls">SharingStarted</span>.Eagerly, viewModelState.value.<span class="fn">toUiState</span>())</pre>
+    </div>
+
+    <div class="info-box when">
+      <div class="info-box-title">Why this pattern</div>
+      <p><code>HasPosts</code> guarantees <code>postsFeed</code> is non-null at compile time. No <code>postsFeed?.let { }</code> defensive coding needed in composables.</p>
+    </div>
+
+    <h3>Pattern 4 — @Immutable + sealed Action interface (Jetcaster)</h3>
+    <p>The most structured approach. <code>@Immutable</code> tells the Compose compiler to skip recomposition when the state reference hasn't changed. All user events funnel through a single <code>onAction</code> dispatch function.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="ann">@Immutable</span>
+<span class="kw">data class</span> <span class="cls">HomeScreenUiState</span>(
+    <span class="kw">val</span> isLoading: <span class="cls">Boolean</span> = <span class="kw">true</span>,
+    <span class="kw">val</span> errorMessage: <span class="cls">String</span>? = <span class="kw">null</span>,
+    <span class="kw">val</span> featuredPodcasts: <span class="cls">ImmutableList</span>&lt;<span class="cls">PodcastInfo</span>&gt; = <span class="fn">persistentListOf</span>(),
+    <span class="kw">val</span> selectedHomeCategory: <span class="cls">HomeCategory</span> = <span class="cls">HomeCategory</span>.Discover,
+    <span class="kw">val</span> homeCategories: <span class="cls">List</span>&lt;<span class="cls">HomeCategory</span>&gt; = <span class="fn">emptyList</span>(),
+)
+
+<span class="cmt">// All user events as sealed interface — one entry point</span>
+<span class="ann">@Immutable</span>
+<span class="kw">sealed interface</span> <span class="cls">HomeAction</span> {
+    <span class="kw">data class</span> <span class="cls">CategorySelected</span>(<span class="kw">val</span> category: <span class="cls">CategoryInfo</span>) : <span class="cls">HomeAction</span>
+    <span class="kw">data class</span> <span class="cls">HomeCategorySelected</span>(<span class="kw">val</span> category: <span class="cls">HomeCategory</span>) : <span class="cls">HomeAction</span>
+    <span class="kw">data class</span> <span class="cls">TogglePodcastFollowed</span>(<span class="kw">val</span> podcast: <span class="cls">PodcastInfo</span>) : <span class="cls">HomeAction</span>
+    <span class="kw">data class</span> <span class="cls">QueueEpisode</span>(<span class="kw">val</span> episode: <span class="cls">PlayerEpisode</span>) : <span class="cls">HomeAction</span>
+}
+
+<span class="cmt">// Single dispatch function</span>
+<span class="kw">fun</span> <span class="fn">onHomeAction</span>(action: <span class="cls">HomeAction</span>) {
+    <span class="kw">when</span> (action) {
+        <span class="kw">is</span> <span class="cls">HomeAction</span>.<span class="cls">CategorySelected</span>     -> <span class="fn">onCategorySelected</span>(action.category)
+        <span class="kw">is</span> <span class="cls">HomeAction</span>.<span class="cls">HomeCategorySelected</span> -> <span class="fn">onHomeCategorySelected</span>(action.category)
+        <span class="kw">is</span> <span class="cls">HomeAction</span>.<span class="cls">QueueEpisode</span>         -> <span class="fn">onQueueEpisode</span>(action.episode)
+        <span class="cmt">// ...</span>
+    }
+}
+
+<span class="cmt">// In composable — single callback</span>
+<span class="fn">MyScreenContent</span>(
+    uiState = uiState,
+    onAction = viewModel::onHomeAction,
+)</pre>
+    </div>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>@Immutable</h4>
+        <p>Tells the Compose compiler it can skip recomposition when the state reference hasn't changed. Without it, the compiler conservatively recomposes on every emission.</p>
+      </div>
+      <div class="concept-card">
+        <h4>ImmutableList</h4>
+        <p>Standard <code>List&lt;T&gt;</code> is not stable in Compose's eyes (it's an interface). <code>ImmutableList</code> has a stable contract — no surprise recompositions.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Flow Combination -->
+  <section id="flow-combination">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div>
+        <h2>Flow Combination (Jetcaster)</h2>
+        <p>Jetcaster's ViewModel combines <strong>7 StateFlows</strong> into a single UiState using a custom <code>combine</code> utility. This is the most complex pattern in the repo.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — HomeViewModel.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="fn">combine</span>(
+    homeCategories,                                                         <span class="cmt">// Flow 1: available tabs</span>
+    selectedHomeCategory,                                                   <span class="cmt">// Flow 2: selected tab</span>
+    subscribedPodcasts,                                                     <span class="cmt">// Flow 3: followed podcasts</span>
+    refreshing,                                                             <span class="cmt">// Flow 4: loading indicator</span>
+    _selectedCategory.<span class="fn">flatMapLatest</span> { <span class="fn">filterableCategoriesUseCase</span>(it) },   <span class="cmt">// Flow 5</span>
+    _selectedCategory.<span class="fn">flatMapLatest</span> { <span class="fn">podcastCategoryFilterUseCase</span>(it) },  <span class="cmt">// Flow 6</span>
+    subscribedPodcasts.<span class="fn">flatMapLatest</span> { podcasts ->
+        episodeStore.<span class="fn">episodesInPodcasts</span>(podcasts.<span class="fn">map</span> { it.podcast.uri }, <span class="num">20</span>)
+    },                                                                      <span class="cmt">// Flow 7: library</span>
+) { homeCategories, homeCategory, podcasts, refreshing,
+    filterableCategories, podcastCategoryFilterResult, libraryEpisodes ->
+
+    <span class="cls">HomeScreenUiState</span>(
+        isLoading = refreshing,
+        featuredPodcasts = podcasts.<span class="fn">map</span> { it.<span class="fn">asExternalModel</span>() }.<span class="fn">toPersistentList</span>(),
+        <span class="cmt">// ...</span>
+    )
+}.<span class="fn">catch</span> { throwable ->
+    <span class="fn">emit</span>(<span class="cls">HomeScreenUiState</span>(isLoading = <span class="kw">false</span>, errorMessage = throwable.message))
+}.<span class="fn">collect</span> {
+    _state.value = it
+}</pre>
+    </div>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>flatMapLatest</h4>
+        <p>When the selected category changes, cancel the previous inner flow and start a new one. Prevents stale data from an old selection.</p>
+      </div>
+      <div class="concept-card">
+        <h4>.catch { }</h4>
+        <p>Error recovery at the combine level. Converts any exception into an error UiState without crashing the entire flow.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Repository Pattern -->
+  <section id="repository">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <div>
+        <h2>Repository Pattern</h2>
+        <p>Repository hides the data source. ViewModel doesn't know if data comes from a database, network, or static list.</p>
+      </div>
+    </div>
+
+    <h3>Simple (Reply)</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// Interface</span>
+<span class="kw">interface</span> <span class="cls">EmailsRepository</span> {
+    <span class="kw">fun</span> <span class="fn">getAllEmails</span>(): <span class="cls">Flow</span>&lt;<span class="cls">List</span>&lt;<span class="cls">Email</span>&gt;&gt;
+}
+
+<span class="cmt">// Implementation — swap out without changing ViewModel</span>
+<span class="kw">class</span> <span class="cls">EmailsRepositoryImpl</span> : <span class="cls">EmailsRepository</span> {
+    <span class="kw">override fun</span> <span class="fn">getAllEmails</span>(): <span class="cls">Flow</span>&lt;<span class="cls">List</span>&lt;<span class="cls">Email</span>&gt;&gt; = <span class="fn">flow</span> {
+        <span class="fn">emit</span>(<span class="cls">LocalEmailsDataProvider</span>.allEmails)
+    }
+}</pre>
+    </div>
+
+    <h3>Layered with UseCases (Jetcaster)</h3>
+    <p>UseCases let you unit-test transformation logic independently and reuse the same data-fetching logic in multiple ViewModels (mobile + TV share the same UseCase).</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">FilterableCategoriesUseCase</span> <span class="ann">@Inject</span> <span class="kw">constructor</span>(
+    <span class="kw">private val</span> categoryStore: <span class="cls">CategoryStore</span>,
+    <span class="kw">private val</span> podcastStore: <span class="cls">PodcastStore</span>,
+) {
+    <span class="kw">operator fun</span> <span class="fn">invoke</span>(selectedCategory: <span class="cls">CategoryInfo</span>?): <span class="cls">Flow</span>&lt;<span class="cls">FilterableCategoriesModel</span>&gt; =
+        <span class="fn">combine</span>(
+            categoryStore.<span class="fn">categoriesSortedByPodcastCount</span>(),
+            podcastStore.<span class="fn">followedPodcastsSortedByLastEpisode</span>(),
+        ) { categories, podcasts -> <span class="cmt">/* transform */</span> }
+}</pre>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Consuming State -->
+  <section id="consuming-state">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <div>
+        <h2>Consuming State in Composables</h2>
+        <p>The correct way to collect flows in composables — lifecycle-aware, no background leaks.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// ✅ Stops collecting when composable is not visible (lifecycle below STARTED)</span>
+<span class="kw">val</span> uiState <span class="kw">by</span> viewModel.uiState.<span class="fn">collectAsStateWithLifecycle</span>()
+
+<span class="cmt">// Side effects</span>
+<span class="fn">LaunchedEffect</span>(key1 = errorMessage) {
+    <span class="kw">if</span> (errorMessage != <span class="kw">null</span>) {
+        snackbarHostState.<span class="fn">showSnackbar</span>(errorMessage)
+        viewModel.<span class="fn">errorShown</span>(errorMessage.id)
+    }
+}
+
+<span class="fn">SideEffect</span> {
+    systemUiController.<span class="fn">setSystemBarsColor</span>(color = backgroundColor)
+}</pre>
+    </div>
+
+    <div class="info-box warning">
+      <div class="info-box-title">Rule</div>
+      <p>Never launch coroutines inside <code>@Composable</code> functions directly. Use <code>LaunchedEffect</code> or <code>rememberCoroutineScope</code>.</p>
+    </div>
+
+    <h3>Key Rules at a Glance</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Question</th>
+            <th>Answer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>How many ViewModels per screen?</td>
+            <td>One ViewModel per screen — never shared across screens</td>
+          </tr>
+          <tr>
+            <td>How is state exposed?</td>
+            <td>Always <code>StateFlow&lt;UiState&gt;</code> — never raw <code>MutableStateFlow</code> public</td>
+          </tr>
+          <tr>
+            <td>How does UI send events?</td>
+            <td>Via callback lambdas or a sealed <code>Action</code> interface</td>
+          </tr>
+          <tr>
+            <td>How is error handled?</td>
+            <td>As a field inside UiState (<code>error: String?</code>) — not thrown in composables</td>
+          </tr>
+          <tr>
+            <td>When does collection stop?</td>
+            <td><code>collectAsStateWithLifecycle()</code> stops at <code>STARTED</code> — no background leaks</td>
+          </tr>
+          <tr>
+            <td>How are multiple flows merged?</td>
+            <td><code>combine()</code> / <code>flatMapLatest()</code> inside <code>viewModelScope.launch {}</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Summary -->
+  <section id="summary">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <div>
+        <h2>Which Pattern to Use</h2>
+        <p>Decision guide — start from top and stop at the first match.</p>
+      </div>
+    </div>
+
+    <div class="flowchart">
+      <div><span class="q">Is your screen data static / one-time?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">Simple MutableStateFlow(initialState)</span> <span class="desc">— no collection (JetLagged)</span></div>
+      <br/>
+      <div><span class="q">Do all states share the same fields (loading + data + error together)?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">data class UiState + .copy() updates</span> <span class="desc">(Reply)</span></div>
+      <br/>
+      <div><span class="q">Are some fields only valid in certain states?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">sealed interface UiState</span> <span class="desc">— HasPosts guarantees non-null (JetNews)</span></div>
+      <br/>
+      <div><span class="q">Do you have many user events going to one ViewModel?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">sealed interface Action + single dispatch</span> <span class="desc">(Jetcaster)</span></div>
+      <br/>
+      <div><span class="q">Do you need to combine 3+ independent data sources?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">combine() + flatMapLatest()</span> <span class="desc">inside viewModelScope (Jetcaster)</span></div>
+      <br/>
+      <div><span class="q">Do you share logic across multiple ViewModels (mobile + TV)?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">Extract to UseCase</span> <span class="desc">(Jetcaster's FilterableCategoriesUseCase)</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Android Compose Samples Learning Guide · Phase 3 of 6 ·
+      <a href="navigation.html">Next: Navigation →</a>
+    </p>
+  </footer>
+</main>
+
+<script src="scripts/main.js"></script>
+</body>
+</html>

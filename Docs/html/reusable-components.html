@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phase 5 — Reusable Components | Android Compose Samples</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/reusable-components.css" />
+</head>
+<body>
+
+<aside>
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-icon">♻️</div>
+      <div>
+        <h2>Android Compose</h2>
+        <p>Learning Guide</p>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-section-label">Phases</div>
+      <a class="nav-item" href="theming-styles-guide.html">
+        <span>🎨</span> Phase 2 — Theming
+      </a>
+      <a class="nav-item" href="design-system.html">
+        <span>🧩</span> Phase 2 — Design System
+      </a>
+      <a class="nav-item" href="architecture-state.html">
+        <span>🏗</span> Phase 3 — Architecture
+      </a>
+      <a class="nav-item" href="navigation.html">
+        <span>🧭</span> Phase 4 — Navigation
+      </a>
+      <a class="nav-item active" href="reusable-components.html">
+        <span>♻️</span> Phase 5 — Components
+      </a>
+      <a class="nav-item" href="testing-performance.html">
+        <span>🧪</span> Phase 6 — Testing
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">On This Page</div>
+      <a class="nav-item" href="#priority">
+        <span>⭐</span> Priority Steal List
+      </a>
+      <a class="nav-item" href="#modifiers">
+        <span>🎨</span> Modifier Extensions
+      </a>
+      <a class="nav-item" href="#composables">
+        <span>🧱</span> Composables
+      </a>
+      <a class="nav-item" href="#annotations">
+        <span>📝</span> Preview Annotations
+      </a>
+      <a class="nav-item" href="#navigation-utils">
+        <span>🧭</span> Navigation Utils
+      </a>
+      <a class="nav-item" href="#state-utils">
+        <span>🔄</span> State Utils
+      </a>
+      <a class="nav-item" href="#skip">
+        <span>🚫</span> What Not to Copy
+      </a>
+    </div>
+  </nav>
+</aside>
+
+<main>
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">📖 Phase 5 · Day 4</div>
+    <h1>Reusable Components</h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="dot"></span> What can I steal?</div>
+      <div class="hero-meta-item">10 copy-ready items</div>
+      <div class="hero-meta-item">6 priority picks</div>
+      <div class="hero-meta-item"><span class="badge badge-advanced">Advanced</span></div>
+    </div>
+  </div>
+
+  <!-- Priority Steal List -->
+  <section id="priority">
+    <div class="section-header">
+      <div class="section-number">⭐</div>
+      <div>
+        <h2>Priority Steal List</h2>
+        <p>Copy these 6 first — they solve problems in virtually every production app.</p>
+      </div>
+    </div>
+
+    <div class="steal-grid">
+      <div class="steal-card">
+        <div class="steal-num">1</div>
+        <div class="steal-source">JetNews · MultipreviewAnnotations.kt</div>
+        <h4>MultipreviewAnnotations</h4>
+        <p>Multi-device previews in one annotation. Generates phone, foldable, tablet, dark, small & large font previews simultaneously.</p>
+      </div>
+      <div class="steal-card">
+        <div class="steal-num">2</div>
+        <div class="steal-source">Jetcaster · GradientScrim.kt</div>
+        <h4>verticalGradientScrim</h4>
+        <p>Modifier extension for text-over-image readability. Uses ModifierNodeElement — the modern API. Production-grade.</p>
+      </div>
+      <div class="steal-card">
+        <div class="steal-num">3</div>
+        <div class="steal-source">Jetcaster / Jetsnack · AppState</div>
+        <h4>lifecycleIsResumed()</h4>
+        <p>NavBackStackEntry extension that prevents duplicate navigation events from fast taps on list items.</p>
+      </div>
+      <div class="steal-card">
+        <div class="steal-num">4</div>
+        <div class="steal-source">Reply / Jetsnack · NavigationActions</div>
+        <h4>Bottom-nav 3-flag pattern</h4>
+        <p><code>popUpTo + launchSingleTop + restoreState</code> — correct tab navigation state in one block.</p>
+      </div>
+      <div class="steal-card">
+        <div class="steal-num">5</div>
+        <div class="steal-source">Jetcaster · HomeScreenUiState</div>
+        <h4>@Immutable + ImmutableList</h4>
+        <p>Prevents unnecessary recompositions. <code>ImmutableList</code> is stable where <code>List&lt;T&gt;</code> is not.</p>
+      </div>
+      <div class="steal-card">
+        <div class="steal-num">6</div>
+        <div class="steal-source">Jetcaster · HomeAction</div>
+        <h4>Sealed Action interface</h4>
+        <p>All user events funnel through a single <code>onAction()</code> dispatch — cleaner ViewModel, easier to test and trace.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Modifier Extensions -->
+  <section id="modifiers">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div>
+        <h2>Modifier Extensions</h2>
+        <p>Drop-in Modifier functions — copy to any project with zero dependencies beyond Compose.</p>
+      </div>
+    </div>
+
+    <h3>
+      verticalGradientScrim
+      <span class="copy-tag copy-tag-modifier">Modifier</span>
+    </h3>
+    <p>From Jetcaster <code>mobile/util/GradientScrim.kt</code>. Draws a vertical gradient overlay over any content — used for image overlays so text remains readable over artwork.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — GradientScrim.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="kw">fun</span> <span class="cls">Modifier</span>.<span class="fn">verticalGradientScrim</span>(
+    color: <span class="cls">Color</span>,
+    startYPercentage: <span class="cls">Float</span> = <span class="num">0f</span>,   <span class="cmt">// 0f = top of element</span>
+    endYPercentage: <span class="cls">Float</span> = <span class="num">1f</span>,     <span class="cmt">// 1f = bottom</span>
+    decay: <span class="cls">Float</span> = <span class="num">1.0f</span>,            <span class="cmt">// 1f = linear, &gt;1f = slower fade at start</span>
+    numStops: <span class="cls">Int</span> = <span class="num">16</span>,             <span class="cmt">// quality vs performance</span>
+): <span class="cls">Modifier</span>
+
+<span class="kw">fun</span> <span class="cls">Modifier</span>.<span class="fn">radialGradientScrim</span>(color: <span class="cls">Color</span>): <span class="cls">Modifier</span>
+
+<span class="cmt">// Usage — fade image to black at the bottom</span>
+<span class="fn">Box</span>(modifier = <span class="cls">Modifier</span>.<span class="fn">fillMaxSize</span>()) {
+    <span class="fn">Image</span>(...)
+    <span class="fn">Box</span>(
+        modifier = <span class="cls">Modifier</span>
+            .<span class="fn">fillMaxSize</span>()
+            .<span class="fn">verticalGradientScrim</span>(
+                color = <span class="cls">Color</span>.Black,
+                startYPercentage = <span class="num">0.3f</span>,
+                endYPercentage = <span class="num">1f</span>,
+                decay = <span class="num">3f</span>,
+            )
+    )
+    <span class="fn">Text</span>(modifier = <span class="cls">Modifier</span>.<span class="fn">align</span>(<span class="cls">Alignment</span>.BottomStart), ...)
+}</pre>
+    </div>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>ModifierNodeElement</h4>
+        <p>Uses the modern API — not the deprecated <code>drawWithContent</code>. Exposed in Layout Inspector via <code>inspectableProperties()</code>.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Non-linear decay</h4>
+        <p>Exponential stop calculation — <code>decay = 3f</code> makes the fade slow at start, accelerating toward the bottom. Pure linear looks unnatural on photos.</p>
+      </div>
+    </div>
+
+    <h3>
+      Gradient Modifier library
+      <span class="copy-tag copy-tag-modifier">Modifier</span>
+    </h3>
+    <p>From Jetsnack <code>Gradient.kt</code> — four Modifier extensions for gradient backgrounds and borders.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — Gradient.kt (Jetsnack)</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// 1. Diagonal gradient tint blended over content</span>
+<span class="kw">fun</span> <span class="cls">Modifier</span>.<span class="fn">diagonalGradientTint</span>(colors: <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;, blendMode: <span class="cls">BlendMode</span>): <span class="cls">Modifier</span>
+
+<span class="cmt">// 2. Horizontal gradient, scroll-offset aware (parallax effect)</span>
+<span class="kw">fun</span> <span class="cls">Modifier</span>.<span class="fn">offsetGradientBackground</span>(
+    colors: <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,
+    width: <span class="cls">Density</span>.() -> <span class="cls">Float</span>,
+    offset: <span class="cls">Density</span>.() -> <span class="cls">Float</span> = { <span class="num">0f</span> },
+): <span class="cls">Modifier</span>
+
+<span class="cmt">// 3. Animated gradient border that fades in/out on selection</span>
+<span class="kw">fun</span> <span class="cls">Modifier</span>.<span class="fn">fadeInDiagonalGradientBorder</span>(
+    showBorder: <span class="cls">Boolean</span>,
+    colors: <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,
+    borderSize: <span class="cls">Dp</span> = <span class="num">2</span>.dp,
+    shape: <span class="cls">Shape</span>,
+): <span class="cls">Modifier</span>
+
+<span class="cmt">// Usage — scroll-parallax gradient</span>
+<span class="kw">val</span> scrollOffset = lazyListState.firstVisibleItemScrollOffset.<span class="fn">toFloat</span>()
+<span class="fn">Box</span>(
+    modifier = <span class="cls">Modifier</span>
+        .<span class="fn">fillMaxWidth</span>()
+        .<span class="fn">offsetGradientBackground</span>(
+            colors = JetsnackTheme.colors.gradient6_1,
+            width = { size.width },
+            offset = { scrollOffset },
+        )
+)
+
+<span class="cmt">// Usage — animated selection border on a chip</span>
+<span class="fn">Box</span>(
+    modifier = <span class="cls">Modifier</span>.<span class="fn">fadeInDiagonalGradientBorder</span>(
+        showBorder = isSelected,
+        colors = <span class="fn">listOf</span>(<span class="cls">Color</span>(<span class="num">0xFFFF6B6B</span>), <span class="cls">Color</span>(<span class="num">0xFF6B6BFF</span>)),
+        shape = <span class="cls">RoundedCornerShape</span>(<span class="num">8</span>.dp),
+    )
+)</pre>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Composables -->
+  <section id="composables">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div>
+        <h2>Composables</h2>
+        <p>Ready-to-adapt composables for common screen needs.</p>
+      </div>
+    </div>
+
+    <h3>
+      PodcastImage — async image with all states
+      <span class="copy-tag copy-tag-composable">Composable</span>
+    </h3>
+    <p>From Jetcaster <code>core/designsystem/component/PodcastImage.kt</code>. The standard pattern for any async image that needs: preview support, loading state, error fallback.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — PodcastImage.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">PodcastImage</span>(
+    podcastImageUrl: <span class="cls">String</span>,
+    contentDescription: <span class="cls">String</span>?,
+    modifier: <span class="cls">Modifier</span> = <span class="cls">Modifier</span>,
+    contentScale: <span class="cls">ContentScale</span> = <span class="cls">ContentScale</span>.Crop,
+    placeholderBrush: <span class="cls">Brush</span> = <span class="fn">thumbnailPlaceholderDefaultBrush</span>(),
+) {
+    <span class="cmt">// 1. Short-circuit in Compose Preview — no network, no crash</span>
+    <span class="kw">if</span> (<span class="cls">LocalInspectionMode</span>.current) {
+        <span class="fn">Box</span>(modifier = modifier.<span class="fn">background</span>(<span class="cls">MaterialTheme</span>.colorScheme.primary))
+        <span class="kw">return</span>
+    }
+
+    <span class="kw">var</span> imagePainterState <span class="kw">by</span> <span class="fn">remember</span> {
+        <span class="fn">mutableStateOf</span>&lt;<span class="cls">AsyncImagePainter</span>.State&gt;(<span class="cls">AsyncImagePainter</span>.State.Empty)
+    }
+
+    <span class="kw">val</span> imageLoader = <span class="fn">rememberAsyncImagePainter</span>(
+        model = <span class="cls">ImageRequest</span>.<span class="cls">Builder</span>(<span class="cls">LocalContext</span>.current)
+            .<span class="fn">data</span>(podcastImageUrl)
+            .<span class="fn">crossfade</span>(<span class="kw">true</span>)
+            .<span class="fn">build</span>(),
+        contentScale = contentScale,
+        onState = { state -> imagePainterState = state },
+    )
+
+    <span class="fn">Box</span>(modifier = modifier, contentAlignment = <span class="cls">Alignment</span>.Center) {
+        <span class="cmt">// 2. Loading / Error → show placeholder brush (shimmer or solid)</span>
+        <span class="kw">when</span> (imagePainterState) {
+            <span class="kw">is</span> <span class="cls">AsyncImagePainter</span>.State.Loading,
+            <span class="kw">is</span> <span class="cls">AsyncImagePainter</span>.State.Error ->
+                <span class="fn">Image</span>(painter = <span class="fn">painterResource</span>(R.drawable.img_empty), ...)
+            <span class="kw">else</span> -> <span class="fn">Box</span>(modifier = modifier.<span class="fn">background</span>(placeholderBrush).<span class="fn">fillMaxSize</span>())
+        }
+        <span class="cmt">// 3. Always render (Coil handles the crossfade transition)</span>
+        <span class="fn">Image</span>(painter = imageLoader, contentDescription = contentDescription, ...)
+    }
+}</pre>
+    </div>
+
+    <div class="info-box when">
+      <div class="info-box-title">Adapt to your project</div>
+      <p>Replace <code>R.drawable.img_empty</code> with your placeholder. Replace <code>thumbnailPlaceholderDefaultBrush()</code> with a shimmer brush or solid color.</p>
+    </div>
+
+    <h3>
+      Loading / Error state pattern
+      <span class="copy-tag copy-tag-composable">Composable</span>
+    </h3>
+    <p>From Jetcaster TV <code>ErrorState.kt</code>. Standard empty-state pattern for any screen — collect UiState and branch on it.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="kw">val</span> screenState <span class="kw">by</span> viewModel.uiState.<span class="fn">collectAsStateWithLifecycle</span>()
+
+<span class="kw">when</span> (screenState) {
+    <span class="kw">is</span> <span class="cls">UiState</span>.Loading -> <span class="fn">LoadingScreen</span>()
+    <span class="kw">is</span> <span class="cls">UiState</span>.Error   -> <span class="fn">ErrorScreen</span>(message = screenState.message, onRetry = viewModel::<span class="fn">refresh</span>)
+    <span class="kw">is</span> <span class="cls">UiState</span>.Success -> <span class="fn">ContentScreen</span>(data = screenState.data)
+}</pre>
+    </div>
+
+    <h3>
+      AnimatingFabContent
+      <span class="copy-tag copy-tag-composable">Composable</span>
+    </h3>
+    <p>From Jetchat <code>AnimatingFabContent.kt</code>. FAB that animates between icon-only and icon+text. Copy for any expandable FAB.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — AnimatingFabContent.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">AnimatingFabContent</span>(
+    icon: <span class="ann">@Composable</span> () -> <span class="cls">Unit</span>,
+    text: <span class="ann">@Composable</span> () -> <span class="cls">Unit</span>,
+    modifier: <span class="cls">Modifier</span> = <span class="cls">Modifier</span>,
+    extended: <span class="cls">Boolean</span> = <span class="kw">true</span>,
+) {
+    <span class="fn">Row</span>(modifier = modifier) {
+        <span class="fn">icon</span>()
+        <span class="fn">AnimatedVisibility</span>(visible = extended) {
+            <span class="fn">Row</span> {
+                <span class="fn">Spacer</span>(<span class="cls">Modifier</span>.<span class="fn">width</span>(<span class="num">12</span>.dp))
+                <span class="fn">text</span>()
+                <span class="fn">Spacer</span>(<span class="cls">Modifier</span>.<span class="fn">width</span>(<span class="num">20</span>.dp))
+            }
+        }
+    }
+}</pre>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Preview Annotations -->
+  <section id="annotations">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div>
+        <h2>Preview Annotations</h2>
+        <p>Copy <code>MultipreviewAnnotations.kt</code> directly from JetNews — no modifications needed.</p>
+      </div>
+    </div>
+
+    <h3>
+      MultipreviewAnnotations.kt
+      <span class="copy-tag copy-tag-annotation">Annotation</span>
+    </h3>
+    <p>Eliminates writing 3 separate <code>@Preview</code> annotations on every composable. One annotation generates previews for dark mode, small font, large font, phone, foldable, and tablet.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — MultipreviewAnnotations.kt (JetNews)</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="ann">@Preview</span>(name = <span class="str">"phone"</span>,    device = <span class="str">"spec:width=360dp,height=640dp,dpi=480"</span>)
+<span class="ann">@Preview</span>(name = <span class="str">"foldable"</span>, device = <span class="str">"spec:width=673dp,height=841dp,dpi=480"</span>)
+<span class="ann">@Preview</span>(name = <span class="str">"tablet"</span>,   device = <span class="str">"spec:width=1280dp,height=800dp,dpi=480"</span>)
+<span class="kw">annotation class</span> <span class="cls">DevicePreviews</span>
+
+<span class="ann">@Preview</span>(name = <span class="str">"small font"</span>, fontScale = <span class="num">0.5f</span>)
+<span class="ann">@Preview</span>(name = <span class="str">"large font"</span>, fontScale = <span class="num">1.5f</span>)
+<span class="kw">annotation class</span> <span class="cls">FontScalePreviews</span>
+
+<span class="ann">@Preview</span>(name = <span class="str">"dark theme"</span>, uiMode = UI_MODE_NIGHT_YES)
+<span class="ann">@FontScalePreviews</span>
+<span class="ann">@DevicePreviews</span>
+<span class="kw">annotation class</span> <span class="cls">CompletePreviews</span>
+
+<span class="cmt">// Usage — one annotation instead of many</span>
+<span class="ann">@CompletePreviews</span>
+<span class="ann">@Composable</span>
+<span class="kw">private fun</span> <span class="fn">MyScreenPreview</span>() {
+    <span class="fn">MyTheme</span> { <span class="fn">MyScreen</span>() }
+}</pre>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Navigation Utils -->
+  <section id="navigation-utils">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div>
+        <h2>Navigation Utilities</h2>
+        <p>Copy these patterns into any project that uses <code>NavController</code>.</p>
+      </div>
+    </div>
+
+    <h3>
+      lifecycleIsResumed() guard
+      <span class="copy-tag copy-tag-pattern">Pattern</span>
+    </h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="kw">private fun</span> <span class="cls">NavBackStackEntry</span>.<span class="fn">lifecycleIsResumed</span>() =
+    this.lifecycle.currentState == <span class="cls">Lifecycle</span>.State.RESUMED
+
+<span class="cmt">// In composable — guard every navigation callback</span>
+<span class="fn">JetsnackButton</span>(
+    onClick = {
+        <span class="kw">if</span> (backStackEntry.<span class="fn">lifecycleIsResumed</span>()) {
+            navController.<span class="fn">navigate</span>(route)
+        }
+    }
+)</pre>
+    </div>
+
+    <h3>
+      rememberAppState pattern
+      <span class="copy-tag copy-tag-pattern">Pattern</span>
+    </h3>
+    <p>Wrap <code>NavController</code> in a <code>@Stable</code> class so composables don't hold direct controller references.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="ann">@Stable</span>
+<span class="kw">class</span> <span class="cls">MyAppState</span>(<span class="kw">val</span> navController: <span class="cls">NavHostController</span>) {
+    <span class="kw">fun</span> <span class="fn">navigateToDetail</span>(id: <span class="cls">Long</span>, from: <span class="cls">NavBackStackEntry</span>) {
+        <span class="kw">if</span> (from.<span class="fn">lifecycleIsResumed</span>()) {
+            navController.<span class="fn">navigate</span>(<span class="cls">DetailRoute</span>(id))
+        }
+    }
+    <span class="kw">fun</span> <span class="fn">navigateBack</span>() { navController.<span class="fn">popBackStack</span>() }
+}
+
+<span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">rememberMyAppState</span>(navController: <span class="cls">NavHostController</span> = <span class="fn">rememberNavController</span>()) =
+    <span class="fn">remember</span>(navController) { <span class="cls">MyAppState</span>(navController) }</pre>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- State Utils -->
+  <section id="state-utils">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <div>
+        <h2>State Management Utilities</h2>
+        <p>Patterns that prevent recomposition bugs and keep ViewModels testable.</p>
+      </div>
+    </div>
+
+    <h3>
+      @Immutable + ImmutableList UiState
+      <span class="copy-tag copy-tag-pattern">Pattern</span>
+    </h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7")</span>
+
+<span class="ann">@Immutable</span>
+<span class="kw">data class</span> <span class="cls">MyScreenUiState</span>(
+    <span class="kw">val</span> items: <span class="cls">ImmutableList</span>&lt;<span class="cls">Item</span>&gt; = <span class="fn">persistentListOf</span>(),
+    <span class="kw">val</span> isLoading: <span class="cls">Boolean</span> = <span class="kw">false</span>,
+    <span class="kw">val</span> error: <span class="cls">String</span>? = <span class="kw">null</span>,
+)
+
+<span class="cmt">// In ViewModel</span>
+_state.value = _state.value.<span class="fn">copy</span>(
+    items = newItems.<span class="fn">toPersistentList</span>()
+)</pre>
+    </div>
+
+    <h3>
+      Sealed Action interface
+      <span class="copy-tag copy-tag-pattern">Pattern</span>
+    </h3>
+    <p>One entry point for all user events — easier to test and trace. Add one entry per user action.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="kw">sealed interface</span> <span class="cls">MyScreenAction</span> {
+    <span class="kw">data class</span>  <span class="cls">ItemClicked</span>(<span class="kw">val</span> id: <span class="cls">Long</span>) : <span class="cls">MyScreenAction</span>
+    <span class="kw">data object</span> <span class="cls">RefreshRequested</span>              : <span class="cls">MyScreenAction</span>
+    <span class="kw">data class</span>  <span class="cls">SearchQueryChanged</span>(<span class="kw">val</span> query: <span class="cls">String</span>) : <span class="cls">MyScreenAction</span>
+}
+
+<span class="cmt">// ViewModel — single dispatch</span>
+<span class="kw">fun</span> <span class="fn">onAction</span>(action: <span class="cls">MyScreenAction</span>) {
+    <span class="kw">when</span> (action) {
+        <span class="kw">is</span> <span class="cls">MyScreenAction</span>.<span class="cls">ItemClicked</span>        -> <span class="fn">openDetail</span>(action.id)
+        <span class="kw">is</span> <span class="cls">MyScreenAction</span>.<span class="cls">RefreshRequested</span>   -> <span class="fn">refresh</span>()
+        <span class="kw">is</span> <span class="cls">MyScreenAction</span>.<span class="cls">SearchQueryChanged</span> -> <span class="fn">updateSearch</span>(action.query)
+    }
+}
+
+<span class="cmt">// Composable — single callback parameter</span>
+<span class="fn">MyScreenContent</span>(
+    uiState = uiState,
+    onAction = viewModel::<span class="fn">onAction</span>,
+)</pre>
+    </div>
+
+    <h3>
+      Internal ViewModelState → sealed public UiState
+      <span class="copy-tag copy-tag-pattern">Pattern</span>
+    </h3>
+    <p>From JetNews. The internal class is easy to <code>.copy()</code>; the public sealed type gives the UI compile-time safety.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="kw">private data class</span> <span class="cls">MyViewModelState</span>(
+    <span class="kw">val</span> data: <span class="cls">List</span>&lt;<span class="cls">Item</span>&gt;? = <span class="kw">null</span>,
+    <span class="kw">val</span> isLoading: <span class="cls">Boolean</span> = <span class="kw">false</span>,
+    <span class="kw">val</span> error: <span class="cls">String</span>? = <span class="kw">null</span>,
+) {
+    <span class="kw">fun</span> <span class="fn">toUiState</span>(): <span class="cls">MyUiState</span> = <span class="kw">when</span> {
+        data == <span class="kw">null</span> && isLoading     -> <span class="cls">MyUiState</span>.Loading
+        data == <span class="kw">null</span> && error != <span class="kw">null</span> -> <span class="cls">MyUiState</span>.<span class="cls">Error</span>(error)
+        data != <span class="kw">null</span>                  -> <span class="cls">MyUiState</span>.<span class="cls">Success</span>(data)
+        <span class="kw">else</span>                          -> <span class="cls">MyUiState</span>.Loading
+    }
+}
+
+<span class="kw">sealed interface</span> <span class="cls">MyUiState</span> {
+    <span class="kw">data object</span> <span class="cls">Loading</span>                         : <span class="cls">MyUiState</span>
+    <span class="kw">data class</span>  <span class="cls">Error</span>(<span class="kw">val</span> message: <span class="cls">String</span>)      : <span class="cls">MyUiState</span>
+    <span class="kw">data class</span>  <span class="cls">Success</span>(<span class="kw">val</span> data: <span class="cls">List</span>&lt;<span class="cls">Item</span>&gt;)   : <span class="cls">MyUiState</span>  <span class="cmt">// non-null guaranteed</span>
+}
+
+<span class="kw">val</span> uiState = viewModelState
+    .<span class="fn">map</span>(<span class="cls">MyViewModelState</span>::<span class="fn">toUiState</span>)
+    .<span class="fn">stateIn</span>(viewModelScope, <span class="cls">SharingStarted</span>.Eagerly, viewModelState.value.<span class="fn">toUiState</span>())</pre>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- What NOT to Copy -->
+  <section id="skip">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <div>
+        <h2>What Not to Copy</h2>
+        <p>These files look reusable but are too domain-specific to drop into another project.</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Why to skip</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Jetsnack/ui/components/Snacks.kt</code></td>
+            <td>Domain-specific snack ordering — tightly coupled to Jetsnack data model</td>
+          </tr>
+          <tr>
+            <td><code>Jetchat/conversation/UserInput.kt</code></td>
+            <td>Chat-specific input with emoji selector and record button — too coupled</td>
+          </tr>
+          <tr>
+            <td><code>JetLagged/sleep/JetLaggedTimeGraph.kt</code></td>
+            <td>Custom sleep visualization — highly domain-specific canvas drawing</td>
+          </tr>
+          <tr>
+            <td><code>Jetcaster/mobile/ui/home/HomeViewModel.kt</code></td>
+            <td>Too complex for most apps — 7-flow combine, Hilt, multiple UseCases</td>
+          </tr>
+          <tr>
+            <td><code>Reply/ui/utils/WindowStateUtils.kt</code></td>
+            <td>Only needed for foldable posture detection — most apps don't need this</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Android Compose Samples Learning Guide · Phase 5 of 6 ·
+      <a href="navigation.html">← Previous: Navigation</a>
+    </p>
+  </footer>
+</main>
+
+<script src="scripts/main.js"></script>
+</body>
+</html>

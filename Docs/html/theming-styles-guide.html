@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jetpack Compose Theming &amp; Styling Guide</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<aside>
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-icon">🎨</div>
+      <div>
+        <h2>Android Compose</h2>
+        <p>Learning Guide</p>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-section-label">Phases</div>
+      <a class="nav-item active" href="theming-styles-guide.html">
+        <span>🎨</span> Phase 2 — Theming
+      </a>
+      <a class="nav-item" href="design-system.html">
+        <span>🧩</span> Phase 2 — Design System
+      </a>
+      <a class="nav-item" href="architecture-state.html">
+        <span>🏗</span> Phase 3 — Architecture
+      </a>
+      <a class="nav-item" href="navigation.html">
+        <span>🧭</span> Phase 4 — Navigation
+      </a>
+      <a class="nav-item" href="reusable-components.html">
+        <span>♻️</span> Phase 5 — Components
+      </a>
+      <a class="nav-item" href="testing-performance.html">
+        <span>🧪</span> Phase 6 — Testing
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-item" href="#overview">All 6 Styles at a Glance</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Styles</div>
+    <a class="nav-item" href="#jetnews">
+      JetNews — Pure M3
+      <span class="nav-badge badge-beginner">Beginner</span>
+    </a>
+    <a class="nav-item" href="#jetlagged">
+      JetLagged — CompositionLocal
+      <span class="nav-badge badge-intermediate">Mid</span>
+    </a>
+    <a class="nav-item" href="#jetcaster">
+      Jetcaster — Expressive
+      <span class="nav-badge badge-advanced">Adv</span>
+    </a>
+    <a class="nav-item" href="#jetchat">
+      Jetchat — Glance Widget
+      <span class="nav-badge badge-intermediate">Mid</span>
+    </a>
+    <a class="nav-item" href="#jetsnack">
+      Jetsnack — Custom DS
+      <span class="nav-badge badge-advanced">Adv</span>
+    </a>
+    <a class="nav-item" href="#reply">
+      Reply — Contrast A11y
+      <span class="nav-badge badge-intermediate">Mid</span>
+    </a>
+  </nav>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Reference</div>
+      <a class="nav-item" href="#comparison">Key Differences</a>
+      <a class="nav-item" href="#decision">What Should You Use?</a>
+      <a class="nav-item" href="#concepts">Core Concepts</a>
+    </div>
+  </nav>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">📖 Phase 2 · Day 1</div>
+    <h1>Theming &amp; Styling Guide</h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="dot"></span> 6 distinct style systems</div>
+      <div class="hero-meta-item">Based on real source code</div>
+      <div class="hero-meta-item">compose-samples repo</div>
+      <div class="hero-meta-item"><span class="badge badge-beginner">Beginner</span></div>
+    </div>
+  </div>
+
+  <!-- ══ OVERVIEW ══ -->
+  <section id="overview">
+    <div class="section-header">
+      <div class="section-number">↗</div>
+      <h2>Overview — How Many Styles?</h2>
+    </div>
+
+    <p>There are <strong>6 distinct theming styles</strong> across the 6 sample apps. They range from the simplest (pure Material 3) to the most complex (fully custom design system that doesn't use Material 3 colors at all).</p>
+
+    <div class="overview-grid">
+      <a class="style-card" href="#jetnews">
+        <div class="card-number">Style 01 · JetNews</div>
+        <div class="card-title">Pure Material 3</div>
+        <div class="card-desc">Full M3 color system, dynamic wallpaper colors on Android 12+, single Montserrat font.</div>
+        <span class="card-badge badge-beginner">⭐ Beginner</span>
+      </a>
+      <a class="style-card" href="#jetlagged">
+        <div class="card-number">Style 02 · JetLagged</div>
+        <div class="card-title">M3 + CompositionLocal Extension</div>
+        <div class="card-desc">Extends M3 with domain-specific health colors via CompositionLocalProvider.</div>
+        <span class="card-badge badge-intermediate">⭐⭐ Intermediate</span>
+      </a>
+      <a class="style-card" href="#jetcaster">
+        <div class="card-number">Style 03 · Jetcaster</div>
+        <div class="card-title">Material Expressive + Shared Module</div>
+        <div class="card-desc">Shared design system module for phone, TV &amp; Wear. Uses experimental MaterialExpressiveTheme.</div>
+        <span class="card-badge badge-advanced">⭐⭐⭐ Advanced</span>
+      </a>
+      <a class="style-card" href="#jetchat">
+        <div class="card-number">Style 04 · Jetchat</div>
+        <div class="card-title">M3 + Glance Widget Theme</div>
+        <div class="card-desc">Standard M3 for the app + a separate GlanceTheme for home screen widgets.</div>
+        <span class="card-badge badge-intermediate">⭐⭐ Intermediate</span>
+      </a>
+      <a class="style-card" href="#jetsnack">
+        <div class="card-number">Style 05 · Jetsnack</div>
+        <div class="card-title">Fully Custom Design System</div>
+        <div class="card-desc">Completely bypasses M3 colors. 11-step color ramps, gradient lists, debug Magenta trap.</div>
+        <span class="card-badge badge-advanced">⭐⭐⭐ Advanced</span>
+      </a>
+      <a class="style-card" href="#reply">
+        <div class="card-number">Style 06 · Reply</div>
+        <div class="card-title">M3 + System Contrast Detection</div>
+        <div class="card-desc">Reads UiModeManager.contrast on Android 14+ and selects from 3 pre-defined contrast tiers.</div>
+        <span class="card-badge badge-intermediate">⭐⭐ Intermediate</span>
+      </a>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══ JETNEWS ══ -->
+  <section id="jetnews">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2>Style 1 — JetNews: Pure Material 3</h2>
+    </div>
+
+    <div class="file-list">
+      <div class="file-list-title">Source Files</div>
+      <ul>
+        <li>JetNews/app/src/main/java/com/example/jetnews/ui/theme/Theme.kt</li>
+        <li>JetNews/app/src/main/java/com/example/jetnews/ui/theme/Color.kt</li>
+        <li>JetNews/app/src/main/java/com/example/jetnews/ui/theme/Type.kt</li>
+        <li>JetNews/app/src/main/java/com/example/jetnews/ui/theme/Shape.kt</li>
+      </ul>
+    </div>
+
+    <h3>How it works</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Theme.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">JetnewsTheme</span>(
+    darkTheme: <span class="cls">Boolean</span> = <span class="fn">isSystemInDarkTheme</span>(),
+    content: <span class="ann">@Composable</span> () -> <span class="cls">Unit</span>
+) {
+    <span class="kw">val</span> colorScheme =
+        <span class="kw">if</span> (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            <span class="cmt">// Android 12+: use wallpaper-based dynamic colors</span>
+            <span class="kw">val</span> context = <span class="cls">LocalContext</span>.current
+            <span class="kw">if</span> (darkTheme) <span class="fn">dynamicDarkColorScheme</span>(context)
+            <span class="kw">else</span> <span class="fn">dynamicLightColorScheme</span>(context)
+        } <span class="kw">else</span> {
+            <span class="cmt">// Older Android: hardcoded light/dark palette</span>
+            <span class="kw">if</span> (darkTheme) DarkColors <span class="kw">else</span> LightColors
+        }
+
+    <span class="cls">MaterialTheme</span>(
+        colorScheme = colorScheme,
+        shapes = JetnewsShapes,
+        typography = JetnewsTypography,
+        content = content,
+    )
+}</code></pre>
+    </div>
+
+    <h3>Colors — 28 M3 slots, all defined</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Color.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">val</span> LightColors = <span class="fn">lightColorScheme</span>(
+    primary             = <span class="cls">Color</span>(<span class="num">0xFFBF0031</span>),  <span class="cmt">// Deep red brand</span>
+    onPrimary           = <span class="cls">Color</span>(<span class="num">0xFFFFFFFF</span>),
+    primaryContainer    = <span class="cls">Color</span>(<span class="num">0xFFFFDAD9</span>),
+    secondary           = <span class="cls">Color</span>(<span class="num">0xFF775656</span>),
+    tertiary            = <span class="cls">Color</span>(<span class="num">0xFF755A2F</span>),
+    background          = <span class="cls">Color</span>(<span class="num">0xFFFFFBFF</span>),
+    surface             = <span class="cls">Color</span>(<span class="num">0xFFFFFBFF</span>),
+    <span class="cmt">// ... all 28 slots defined</span>
+)</code></pre>
+    </div>
+
+    <h3>Typography — Montserrat with LineBreak</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Type.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">private val</span> Montserrat = <span class="cls">FontFamily</span>(
+    <span class="fn">Font</span>(R.font.montserrat_regular),
+    <span class="fn">Font</span>(R.font.montserrat_medium, <span class="cls">FontWeight</span>.W500),
+)
+
+<span class="kw">val</span> JetnewsTypography = <span class="cls">Typography</span>(
+    headlineLarge = defaultTextStyle.copy(fontSize = <span class="num">32</span>.sp, lineBreak = <span class="cls">LineBreak</span>.Heading),
+    bodyLarge     = defaultTextStyle.copy(fontSize = <span class="num">16</span>.sp, lineBreak = <span class="cls">LineBreak</span>.Paragraph),
+    <span class="cmt">// ... all 15 type scale slots</span>
+)</code></pre>
+    </div>
+
+    <h3>Shapes</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Shape.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">val</span> JetnewsShapes = <span class="cls">Shapes</span>(
+    small  = <span class="cls">RoundedCornerShape</span>(<span class="num">4</span>.dp),
+    medium = <span class="cls">RoundedCornerShape</span>(<span class="num">4</span>.dp),
+    large  = <span class="cls">RoundedCornerShape</span>(<span class="num">8</span>.dp),
+)</code></pre>
+    </div>
+
+    <div class="info-box purpose">
+      <div class="info-box-title">Purpose</div>
+      <p>The <strong>cleanest and most standard</strong> M3 implementation. The reference starting point Google recommends.</p>
+    </div>
+    <div class="info-box when">
+      <div class="info-box-title">When to use</div>
+      <ul>
+        <li>App follows Material Design guidelines</li>
+        <li>You want dynamic wallpaper-based colors on Android 12+</li>
+        <li>No custom brand design system needed</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══ JETLAGGED ══ -->
+  <section id="jetlagged">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2>Style 2 — JetLagged: M3 + CompositionLocal Extension</h2>
+    </div>
+
+    <div class="file-list">
+      <div class="file-list-title">Source Files</div>
+      <ul>
+        <li>JetLagged/app/src/main/java/com/example/jetlagged/ui/theme/Theme.kt</li>
+        <li>JetLagged/app/src/main/java/com/example/jetlagged/ui/theme/Color.kt</li>
+        <li>JetLagged/app/src/main/java/com/example/jetlagged/ui/theme/Type.kt</li>
+      </ul>
+    </div>
+
+    <h3>Pattern — 4 steps</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Theme.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="cmt">// Step 1: Define domain-specific extra colors</span>
+<span class="kw">data class</span> <span class="cls">JetLaggedExtraColors</span>(
+    <span class="kw">val</span> header     : <span class="cls">Color</span> = <span class="cls">Color</span>.Unspecified,
+    <span class="kw">val</span> bed        : <span class="cls">Color</span> = <span class="cls">Color</span>.Unspecified,
+    <span class="kw">val</span> sleep      : <span class="cls">Color</span> = <span class="cls">Color</span>.Unspecified,
+    <span class="kw">val</span> heart      : <span class="cls">Color</span> = <span class="cls">Color</span>.Unspecified,
+    <span class="kw">val</span> heartWave  : <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt; = listOf(<span class="cls">Color</span>.Unspecified),
+    <span class="kw">val</span> sleepAwake : <span class="cls">Color</span> = <span class="cls">Color</span>.Unspecified,
+    <span class="kw">val</span> sleepDeep  : <span class="cls">Color</span> = <span class="cls">Color</span>.Unspecified,
+    <span class="cmt">// ... 14 domain colors total</span>
+)
+
+<span class="cmt">// Step 2: Create a CompositionLocal holder</span>
+<span class="kw">val</span> LocalExtraColors = <span class="fn">staticCompositionLocalOf</span> { <span class="cls">JetLaggedExtraColors</span>() }
+
+<span class="cmt">// Step 3: Provide it alongside MaterialTheme</span>
+<span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">JetLaggedTheme</span>(isDarkTheme: <span class="cls">Boolean</span> = <span class="fn">isSystemInDarkTheme</span>(), ...) {
+    <span class="kw">val</span> extraColors = <span class="kw">if</span> (isDarkTheme) DarkExtraColors <span class="kw">else</span> LightExtraColors
+
+    <span class="cls">CompositionLocalProvider</span>(LocalExtraColors <span class="kw">provides</span> extraColors) {
+        <span class="cls">MaterialTheme</span>(
+            colorScheme = <span class="kw">if</span> (isDarkTheme) DarkColorScheme <span class="kw">else</span> LightColorScheme,
+            content = content,
+        )
+    }
+}
+
+<span class="cmt">// Step 4: Clean access API via companion object</span>
+<span class="kw">object</span> <span class="cls">JetLaggedTheme</span> {
+    <span class="kw">val</span> extraColors: <span class="cls">JetLaggedExtraColors</span>
+        <span class="ann">@Composable</span> <span class="kw">get</span>() = LocalExtraColors.current
+}</code></pre>
+    </div>
+
+    <h3>Accessing colors in composables</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Usage</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="cmt">// Standard M3 colors — unchanged</span>
+<span class="kw">val</span> primary = <span class="cls">MaterialTheme</span>.colorScheme.primary
+
+<span class="cmt">// Domain colors — via JetLaggedTheme</span>
+<span class="kw">val</span> sleepColor      = <span class="cls">JetLaggedTheme</span>.extraColors.sleep
+<span class="kw">val</span> heartWaveColors = <span class="cls">JetLaggedTheme</span>.extraColors.heartWave  <span class="cmt">// List&lt;Color&gt;</span></code></pre>
+    </div>
+
+    <h3>Typography — Google Fonts (Lato) + custom named styles</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Type.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">val</span> provider = <span class="cls">GoogleFont</span>.<span class="cls">Provider</span>(
+    providerAuthority = <span class="str">"com.google.android.gms.fonts"</span>,
+    providerPackage   = <span class="str">"com.google.android.gms"</span>,
+    certificates      = R.array.com_google_android_gms_fonts_certs,
+)
+<span class="kw">val</span> fontFamily = <span class="cls">FontFamily</span>(<span class="fn">Font</span>(googleFont = <span class="cls">GoogleFont</span>(<span class="str">"Lato"</span>), fontProvider = provider))
+
+<span class="cmt">// Named styles — not tied to M3 slot names</span>
+<span class="kw">val</span> TitleBarStyle = <span class="cls">TextStyle</span>(fontSize = <span class="num">22</span>.sp, fontWeight = <span class="cls">FontWeight</span>(<span class="num">700</span>), fontFamily = fontFamily)
+<span class="kw">val</span> HeadingStyle  = <span class="cls">TextStyle</span>(fontSize = <span class="num">24</span>.sp, fontWeight = <span class="cls">FontWeight</span>(<span class="num">600</span>), fontFamily = fontFamily)
+<span class="kw">val</span> TitleStyle    = <span class="cls">TextStyle</span>(fontSize = <span class="num">36</span>.sp, fontWeight = <span class="cls">FontWeight</span>(<span class="num">500</span>), fontFamily = fontFamily)</code></pre>
+    </div>
+
+    <div class="info-box purpose">
+      <div class="info-box-title">Purpose</div>
+      <p>Shows how to <strong>extend M3 without replacing it</strong>. All M3 components work correctly; domain-specific colors live in a parallel system.</p>
+    </div>
+    <div class="info-box when">
+      <div class="info-box-title">When to use</div>
+      <ul>
+        <li>App has domain-specific data (health metrics, finance, maps)</li>
+        <li>Need colors that don't fit into M3 role slots</li>
+        <li>Want dark/light variants for those extra colors too</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══ JETCASTER ══ -->
+  <section id="jetcaster">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2>Style 3 — Jetcaster: Material Expressive + Shared Design System</h2>
+    </div>
+
+    <div class="file-list">
+      <div class="file-list-title">Source Files</div>
+      <ul>
+        <li>Jetcaster/core/designsystem/src/.../theme/Color.kt</li>
+        <li>Jetcaster/core/designsystem/src/.../theme/Typography.kt</li>
+        <li>Jetcaster/core/designsystem/src/.../theme/Shape.kt</li>
+        <li>Jetcaster/mobile/src/.../ui/theme/Theme.kt</li>
+      </ul>
+    </div>
+
+    <h3>Shared module structure</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Directory tree</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code>Jetcaster/
+├── core/
+│   └── designsystem/          ← shared across all platforms
+│       └── theme/
+│           ├── Color.kt       ← color tokens (3 contrast levels)
+│           ├── Typography.kt  ← Montserrat + RobotoFlex
+│           ├── Shape.kt       ← shared shapes
+│           └── Keylines.kt    ← spacing constants
+├── mobile/                    ← uses core:designsystem
+├── tv/                        ← uses core:designsystem
+└── wear/                      ← uses core:designsystem</code></pre>
+    </div>
+
+    <h3>MaterialExpressiveTheme + MotionScheme</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Theme.kt (mobile)</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@OptIn(ExperimentalMaterial3ExpressiveApi::class)</span>
+<span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">JetcasterTheme</span>(dynamicColor: <span class="cls">Boolean</span> = <span class="kw">false</span>, content: <span class="ann">@Composable</span> () -> <span class="cls">Unit</span>) {
+    <span class="kw">val</span> colorScheme = <span class="kw">when</span> {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
+            <span class="fn">dynamicDarkColorScheme</span>(<span class="cls">LocalContext</span>.current)
+        <span class="kw">else</span> -> darkScheme  <span class="cmt">// imported from core:designsystem</span>
+    }
+
+    <span class="cls">MaterialExpressiveTheme</span>(
+        colorScheme  = colorScheme,
+        motionScheme = <span class="cls">MotionScheme</span>.<span class="fn">expressive</span>(),  <span class="cmt">// animation spring/easing</span>
+        shapes       = JetcasterShapes,
+        typography   = JetcasterTypography,
+        content      = content,
+    )
+}</code></pre>
+    </div>
+
+    <div class="info-box purpose">
+      <div class="info-box-title">Purpose</div>
+      <p>The <strong>enterprise / multi-platform pattern</strong>. Design tokens defined once in a shared Gradle module, consumed by phone, TV, and Wear targets.</p>
+    </div>
+    <div class="info-box when">
+      <div class="info-box-title">When to use</div>
+      <ul>
+        <li>Building for multiple form factors (phone + TV + Wear + tablet)</li>
+        <li>Team has a shared design system across multiple modules</li>
+        <li>Want coordinated animation behavior via <code>MotionScheme</code></li>
+      </ul>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══ JETCHAT ══ -->
+  <section id="jetchat">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2>Style 4 — Jetchat: M3 + Glance Widget Theme</h2>
+    </div>
+
+    <div class="file-list">
+      <div class="file-list-title">Source Files</div>
+      <ul>
+        <li>Jetchat/app/src/main/java/com/example/compose/jetchat/theme/Themes.kt</li>
+        <li>Jetchat/app/src/main/java/com/example/compose/jetchat/theme/Color.kt</li>
+        <li>Jetchat/app/src/main/java/com/example/compose/jetchat/theme/Typography.kt</li>
+        <li>Jetchat/app/src/main/java/com/example/compose/jetchat/widget/theme/Theme.kt</li>
+      </ul>
+    </div>
+
+    <h3>App theme — dynamic color on by default</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Themes.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">JetchatTheme</span>(
+    isDarkTheme   : <span class="cls">Boolean</span> = <span class="fn">isSystemInDarkTheme</span>(),
+    isDynamicColor: <span class="cls">Boolean</span> = <span class="kw">true</span>,  <span class="cmt">// ← enabled by default — unique to Jetchat</span>
+    content: <span class="ann">@Composable</span> () -> <span class="cls">Unit</span>
+) {
+    <span class="kw">val</span> dynamicColor = isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    <span class="kw">val</span> myColorScheme = <span class="kw">when</span> {
+        dynamicColor && isDarkTheme  -> <span class="fn">dynamicDarkColorScheme</span>(<span class="cls">LocalContext</span>.current)
+        dynamicColor && !isDarkTheme -> <span class="fn">dynamicLightColorScheme</span>(<span class="cls">LocalContext</span>.current)
+        isDarkTheme                  -> JetchatDarkColorScheme
+        <span class="kw">else</span>                         -> JetchatLightColorScheme
+    }
+    <span class="cls">MaterialTheme</span>(colorScheme = myColorScheme, typography = JetchatTypography, content = content)
+}</code></pre>
+    </div>
+
+    <h3>Glance widget theme — separate entry point</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · widget/theme/Theme.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">JetchatWidgetTheme</span>(content: <span class="ann">@Composable</span> () -> <span class="cls">Unit</span>) {
+    <span class="cls">GlanceTheme</span>(
+        colors = <span class="kw">if</span> (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            <span class="cls">GlanceTheme</span>.colors
+        } <span class="kw">else</span> {
+            <span class="cls">ColorProviders</span>(
+                light = JetchatLightColorScheme,
+                dark  = JetchatDarkColorScheme,
+            )
+        },
+        content = content,
+    )
+}</code></pre>
+    </div>
+
+    <div class="info-box purpose">
+      <div class="info-box-title">Purpose</div>
+      <p>Maintains <strong>visual consistency between the app and its home screen widget</strong>. The widget lives outside the Compose tree and needs its own <code>GlanceTheme</code> entry point.</p>
+    </div>
+    <div class="info-box when">
+      <div class="info-box-title">When to use</div>
+      <ul>
+        <li>App ships a home screen widget via Glance API</li>
+        <li>Widget must visually match the app, including dynamic color</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══ JETSNACK ══ -->
+  <section id="jetsnack">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2>Style 5 — Jetsnack: Fully Custom Design System</h2>
+    </div>
+
+    <div class="file-list">
+      <div class="file-list-title">Source Files</div>
+      <ul>
+        <li>Jetsnack/app/src/main/java/com/example/jetsnack/ui/theme/Theme.kt</li>
+        <li>Jetsnack/app/src/main/java/com/example/jetsnack/ui/theme/Color.kt</li>
+        <li>Jetsnack/app/src/main/java/com/example/jetsnack/ui/theme/Type.kt</li>
+        <li>Jetsnack/app/src/main/java/com/example/jetsnack/ui/theme/Shape.kt</li>
+      </ul>
+    </div>
+
+    <h3>The Magenta debug trap</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Theme.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="cmt">// All 40+ M3 slots = Magenta — any accidental usage is immediately visible</span>
+<span class="kw">fun</span> <span class="fn">debugColors</span>(darkTheme: <span class="cls">Boolean</span>, debugColor: <span class="cls">Color</span> = <span class="cls">Color</span>.Magenta) = <span class="cls">ColorScheme</span>(
+    primary   = debugColor,
+    onPrimary = debugColor,
+    secondary = debugColor,
+    <span class="cmt">// ... ALL slots = Magenta</span>
+)
+
+<span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">JetsnackTheme</span>(darkTheme: <span class="cls">Boolean</span> = <span class="fn">isSystemInDarkTheme</span>(), ...) {
+    <span class="kw">val</span> colors = <span class="kw">if</span> (darkTheme) DarkColorPalette <span class="kw">else</span> LightColorPalette
+
+    <span class="fn">ProvideJetsnackColors</span>(colors) {
+        <span class="cls">MaterialTheme</span>(
+            colorScheme = <span class="fn">debugColors</span>(darkTheme),  <span class="cmt">// ← intentional Magenta</span>
+            content     = content,
+        )
+    }
+}</code></pre>
+    </div>
+
+    <h3>Custom JetsnackColors — gradients as first-class tokens</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Theme.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@Immutable</span>
+<span class="kw">data class</span> <span class="cls">JetsnackColors</span>(
+    <span class="kw">val</span> gradient6_1   : <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,  <span class="cmt">// 5-stop gradient</span>
+    <span class="kw">val</span> gradient3_1   : <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,  <span class="cmt">// 3-stop gradient</span>
+    <span class="kw">val</span> gradient2_1   : <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,  <span class="cmt">// 2-stop gradient</span>
+    <span class="kw">val</span> tornado1      : <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,  <span class="cmt">// animation gradient</span>
+    <span class="kw">val</span> brand         : <span class="cls">Color</span>,
+    <span class="kw">val</span> uiBackground  : <span class="cls">Color</span>,
+    <span class="kw">val</span> textPrimary   : <span class="cls">Color</span> = brand,
+    <span class="kw">val</span> textSecondary : <span class="cls">Color</span>,
+    <span class="kw">val</span> textLink      : <span class="cls">Color</span>,
+    <span class="kw">val</span> iconPrimary   : <span class="cls">Color</span> = brand,
+    <span class="kw">val</span> error         : <span class="cls">Color</span>,
+    <span class="kw">val</span> isDark        : <span class="cls">Boolean</span>,
+)</code></pre>
+    </div>
+
+    <h3>11-step color ramps</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Color.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="cmt">// Shadow (blue-purple) — 0 = lightest, 11 = darkest</span>
+<span class="kw">val</span> Shadow11 = <span class="cls">Color</span>(<span class="num">0xff001787</span>)
+<span class="kw">val</span> Shadow0  = <span class="cls">Color</span>(<span class="num">0xfff4f2ff</span>)
+<span class="cmt">// Same 12-step pattern for: Ocean, Lavender, Rose, Neutral</span></code></pre>
+    </div>
+
+    <h3>Shapes — pill, rounded, square</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Shape.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">val</span> Shapes = <span class="cls">Shapes</span>(
+    small  = <span class="cls">RoundedCornerShape</span>(percent = <span class="num">50</span>),  <span class="cmt">// pill</span>
+    medium = <span class="cls">RoundedCornerShape</span>(<span class="num">20</span>.dp),
+    large  = <span class="cls">RoundedCornerShape</span>(<span class="num">0</span>.dp),           <span class="cmt">// square</span>
+)</code></pre>
+    </div>
+
+    <div class="info-box warning">
+      <div class="info-box-title">Key insight — the Magenta trick</div>
+      <p>Setting all M3 color slots to <code>Color.Magenta</code> is intentional. If any developer accidentally uses <code>MaterialTheme.colorScheme.primary</code> instead of <code>JetsnackTheme.colors.brand</code>, the UI turns bright pink immediately — a runtime design system boundary enforcer.</p>
+    </div>
+    <div class="info-box purpose">
+      <div class="info-box-title">Purpose</div>
+      <p>Demonstrates a <strong>brand-first design system</strong> that completely overrides M3 colors with a proprietary 11-step palette and gradient system.</p>
+    </div>
+    <div class="info-box when">
+      <div class="info-box-title">When to use</div>
+      <ul>
+        <li>Brand design system is completely custom (not Material-based)</li>
+        <li>Need multi-stop gradient colors as first-class theme tokens</li>
+        <li>E-commerce, entertainment, or gaming apps with strong visual identity</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══ REPLY ══ -->
+  <section id="reply">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2>Style 6 — Reply: M3 + System Contrast Detection</h2>
+    </div>
+
+    <div class="file-list">
+      <div class="file-list-title">Source Files</div>
+      <ul>
+        <li>Reply/app/src/main/java/com/example/reply/ui/theme/Theme.kt</li>
+        <li>Reply/app/src/main/java/com/example/reply/ui/theme/Color.kt</li>
+        <li>Reply/app/src/main/java/com/example/reply/ui/theme/Shapes.kt</li>
+      </ul>
+    </div>
+
+    <h3>Contrast-aware scheme selection</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Theme.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">selectSchemeForContrast</span>(isDark: <span class="cls">Boolean</span>): <span class="cls">ColorScheme</span> {
+    <span class="kw">val</span> uiModeManager = context.<span class="fn">getSystemService</span>(Context.UI_MODE_SERVICE) <span class="kw">as</span> <span class="cls">UiModeManager</span>
+    <span class="kw">val</span> contrastLevel = uiModeManager.contrast  <span class="cmt">// Float: 0.0 → 1.0</span>
+
+    <span class="kw">return when</span> (contrastLevel) {
+        <span class="kw">in</span> <span class="num">0.0</span>f..<span class="num">0.33</span>f -> <span class="kw">if</span> (isDark) darkScheme                  <span class="kw">else</span> lightScheme
+        <span class="kw">in</span> <span class="num">0.34</span>f..<span class="num">0.66</span>f -> <span class="kw">if</span> (isDark) mediumContrastDarkColorScheme  <span class="kw">else</span> mediumContrastLightColorScheme
+        <span class="kw">in</span> <span class="num">0.67</span>f..<span class="num">1.0</span>f  -> <span class="kw">if</span> (isDark) highContrastDarkColorScheme    <span class="kw">else</span> highContrastLightColorScheme
+        <span class="kw">else</span>           -> <span class="kw">if</span> (isDark) darkScheme                  <span class="kw">else</span> lightScheme
+    }
+}</code></pre>
+    </div>
+
+    <h3>Shapes — full 5-level scale</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · Shapes.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">val</span> shapes = <span class="cls">Shapes</span>(
+    extraSmall = <span class="cls">RoundedCornerShape</span>(<span class="num">4</span>.dp),
+    small      = <span class="cls">RoundedCornerShape</span>(<span class="num">8</span>.dp),
+    medium     = <span class="cls">RoundedCornerShape</span>(<span class="num">16</span>.dp),
+    large      = <span class="cls">RoundedCornerShape</span>(<span class="num">24</span>.dp),
+    extraLarge = <span class="cls">RoundedCornerShape</span>(<span class="num">32</span>.dp),
+)</code></pre>
+    </div>
+
+    <div class="info-box purpose">
+      <div class="info-box-title">Purpose</div>
+      <p>The <strong>accessibility-first pattern</strong>. Automatically adapts to the contrast level set in Android Settings → Accessibility → Color and Motion. No user action needed inside the app.</p>
+    </div>
+    <div class="info-box when">
+      <div class="info-box-title">When to use</div>
+      <ul>
+        <li>Government, healthcare, or public-sector apps</li>
+        <li>Apps targeting older users or users with visual impairments</li>
+        <li>Apps that must comply with WCAG 2.1 AA or AAA contrast ratios</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══ COMPARISON ══ -->
+  <section id="comparison">
+    <div class="section-header">
+      <div class="section-number">↔</div>
+      <h2>Key Differences Compared</h2>
+    </div>
+
+    <h3>Color system</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>App</th><th>Approach</th><th># Color Tokens</th><th>Dynamic Color</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>JetNews</td><td>M3 standard</td><td>28 (light + dark)</td><td><span class="yes-tag">Yes (12+)</span></td></tr>
+          <tr><td>JetLagged</td><td>M3 + 14 extra</td><td>28 + 14 domain</td><td><span class="no-tag">No</span></td></tr>
+          <tr><td>Jetcaster</td><td>M3 × 3 contrast tiers</td><td>28 × 6 schemes</td><td><span class="yes-tag">Yes (12+)</span></td></tr>
+          <tr><td>Jetchat</td><td>M3 standard</td><td>28 (light + dark)</td><td><span class="yes-tag">Yes — default ON</span></td></tr>
+          <tr><td>Jetsnack</td><td>Custom 11-step ramps</td><td>~60 + gradients</td><td><span class="no-tag">No</span></td></tr>
+          <tr><td>Reply</td><td>M3 × 3 contrast tiers</td><td>28 × 6 schemes</td><td><span class="yes-tag">Yes (12+)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Typography</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>App</th><th>Font(s)</th><th>Loading</th><th>Named Styles</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>JetNews</td><td>Montserrat</td><td>Local asset</td><td><span class="no-tag">No (M3 scale)</span></td></tr>
+          <tr><td>JetLagged</td><td>Lato</td><td>Google Fonts</td><td><span class="yes-tag">Yes — custom named</span></td></tr>
+          <tr><td>Jetcaster</td><td>Montserrat + RobotoFlex</td><td>Local asset</td><td><span class="no-tag">No (M3 scale)</span></td></tr>
+          <tr><td>Jetchat</td><td>Montserrat + Karla</td><td>Google Fonts</td><td><span class="no-tag">No (M3 scale)</span></td></tr>
+          <tr><td>Jetsnack</td><td>Montserrat + Karla</td><td>Local asset</td><td><span class="no-tag">No (mixed fonts)</span></td></tr>
+          <tr><td>Reply</td><td>Default system</td><td>None</td><td><span class="no-tag">No (M3 scale)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Shapes</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>App</th><th>small</th><th>medium</th><th>large</th><th>extraLarge</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>JetNews</td><td>4dp</td><td>4dp</td><td>8dp</td><td>—</td></tr>
+          <tr><td>JetLagged</td><td>default</td><td>default</td><td>CircleShape</td><td>—</td></tr>
+          <tr><td>Jetcaster</td><td>50% pill</td><td>8dp</td><td>16dp</td><td>—</td></tr>
+          <tr><td>Jetchat</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>Jetsnack</td><td>50% pill</td><td>20dp</td><td>0dp square</td><td>—</td></tr>
+          <tr><td>Reply</td><td>4dp (XS)</td><td>8dp→16dp</td><td>24dp</td><td>32dp</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══ DECISION ══ -->
+  <section id="decision">
+    <div class="section-header">
+      <div class="section-number">?</div>
+      <h2>What Should You Use?</h2>
+    </div>
+
+    <h3>Decision flowchart</h3>
+    <div class="flowchart">
+      <div><span class="q">App ships a home screen widget?</span></div>
+      <div>  └─ <span class="ans">YES</span> → <span class="style-ref">Style 4 (Jetchat)</span> <span class="desc">— add GlanceTheme alongside app theme</span></div>
+      <br/>
+      <div><span class="q">Targeting phone + TV + Wear?</span></div>
+      <div>  └─ <span class="ans">YES</span> → <span class="style-ref">Style 3 (Jetcaster)</span> <span class="desc">— shared designsystem Gradle module</span></div>
+      <br/>
+      <div><span class="q">Brand has a fully custom design system?</span></div>
+      <div>  └─ <span class="ans">YES</span> → <span class="style-ref">Style 5 (Jetsnack)</span> <span class="desc">— full custom, replace M3 color slots</span></div>
+      <div>       └─ <span class="q">Just needs extra domain colors on top of M3?</span></div>
+      <div>            └─ <span class="ans">YES</span> → <span class="style-ref">Style 2 (JetLagged)</span> <span class="desc">— extend with CompositionLocal</span></div>
+      <br/>
+      <div><span class="q">App requires WCAG accessibility compliance?</span></div>
+      <div>  └─ <span class="ans">YES</span> → <span class="style-ref">Style 6 (Reply)</span> <span class="desc">— contrast-aware + UiModeManager</span></div>
+      <br/>
+      <div><span class="q">None of the above?</span></div>
+      <div>  └─ <span class="style-ref">Style 1 (JetNews)</span> <span class="desc">— pure M3, cleanest starting point</span></div>
+    </div>
+
+    <h3>Combinations you can mix</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Goal</th><th>How to combine</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Domain colors + dynamic color</td><td>JetLagged pattern + add dynamic color check inside the theme function</td></tr>
+          <tr><td>Custom design system + accessibility</td><td>Jetsnack custom colors + define 3 palette variants like Reply</td></tr>
+          <tr><td>Shared module + Glance widget</td><td>Jetcaster module structure + Jetchat GlanceTheme pattern</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══ CORE CONCEPTS ══ -->
+  <section id="concepts">
+    <div class="section-header">
+      <div class="section-number">📖</div>
+      <h2>Core Concepts to Learn First</h2>
+    </div>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>MaterialTheme</h4>
+        <p>Root of all M3 theming. Provides <code>colorScheme</code>, <code>typography</code>, and <code>shapes</code> to the entire composition tree below it via CompositionLocal.</p>
+      </div>
+      <div class="concept-card">
+        <h4>CompositionLocal</h4>
+        <p>Passes data implicitly through the tree without threading it through every function parameter. Used by JetLagged and Jetsnack for custom color systems.</p>
+      </div>
+      <div class="concept-card">
+        <h4>lightColorScheme / darkColorScheme</h4>
+        <p>M3 builders for color schemes. Only specify colors that differ from M3 defaults — unspecified slots get sensible baseline values automatically.</p>
+      </div>
+      <div class="concept-card">
+        <h4>dynamicColorScheme</h4>
+        <p>Android 12+ (API 31). Generates a full M3 color scheme from the user's wallpaper. Guard with <code>Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.S</code>.</p>
+      </div>
+    </div>
+
+    <h3>Minimal theme skeleton</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin · starter template</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">MyAppTheme</span>(
+    darkTheme: <span class="cls">Boolean</span> = <span class="fn">isSystemInDarkTheme</span>(),
+    content: <span class="ann">@Composable</span> () -> <span class="cls">Unit</span>
+) {
+    <span class="kw">val</span> colorScheme = <span class="kw">if</span> (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        <span class="kw">val</span> ctx = <span class="cls">LocalContext</span>.current
+        <span class="kw">if</span> (darkTheme) <span class="fn">dynamicDarkColorScheme</span>(ctx) <span class="kw">else</span> <span class="fn">dynamicLightColorScheme</span>(ctx)
+    } <span class="kw">else</span> {
+        <span class="kw">if</span> (darkTheme) DarkColorScheme <span class="kw">else</span> LightColorScheme
+    }
+
+    <span class="cls">MaterialTheme</span>(
+        colorScheme = colorScheme,
+        typography  = MyTypography,
+        shapes      = MyShapes,
+        content     = content,
+    )
+}
+
+<span class="cmt">// Access anywhere below:</span>
+<span class="kw">val</span> primary   = <span class="cls">MaterialTheme</span>.colorScheme.primary
+<span class="kw">val</span> bodyFont  = <span class="cls">MaterialTheme</span>.typography.bodyLarge
+<span class="kw">val</span> cardShape = <span class="cls">MaterialTheme</span>.shapes.medium</code></pre>
+    </div>
+  </section>
+
+  <footer>
+    <p>Android Compose Samples Learning Guide · Phase 2 of 6 ·
+      <a href="design-system.html">Next: Design System →</a>
+    </p>
+  </footer>
+
+</main>
+
+<script src="scripts/main.js"></script>
+</body>
+</html>

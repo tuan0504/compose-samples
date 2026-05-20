@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phase 6 — Testing &amp; Performance | Android Compose Samples</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+
+<aside>
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-icon">🧪</div>
+      <div>
+        <h2>Android Compose</h2>
+        <p>Learning Guide</p>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-section-label">Phases</div>
+      <a class="nav-item" href="theming-styles-guide.html">
+        <span>🎨</span> Phase 2 — Theming
+      </a>
+      <a class="nav-item" href="design-system.html">
+        <span>🧩</span> Phase 2 — Design System
+      </a>
+      <a class="nav-item" href="architecture-state.html">
+        <span>🏗️</span> Phase 3 — Architecture
+      </a>
+      <a class="nav-item" href="navigation.html">
+        <span>🧭</span> Phase 4 — Navigation
+      </a>
+      <a class="nav-item" href="reusable-components.html">
+        <span>♻️</span> Phase 5 — Components
+      </a>
+      <a class="nav-item active" href="testing-performance.html">
+        <span>🧪</span> Phase 6 — Testing
+      </a>
+    </div>
+  </nav>
+</aside>
+
+<main>
+
+  <div class="hero">
+    <div class="hero-tag">Phase 6 · Day 4–5</div>
+    <h1>Testing &amp; Performance</h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="dot">◆</span>
+        <span>How do they verify it works?</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="dot">◆</span>
+        <span class="badge badge-intermediate">Intermediate</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overview -->
+  <section id="overview">
+    <div class="section-header">
+      <div class="section-number">01</div>
+      <div>
+        <h2>Overview</h2>
+        <p>UI tests use the Compose semantic tree — no View IDs, no mocking the UI. Unit tests test logic in isolation with coroutine-aware helpers.</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>App</th>
+            <th>UI Tests</th>
+            <th>Unit Tests</th>
+            <th>Fake Strategy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>JetLagged</strong></td>
+            <td><code>createComposeRule</code> — smoke test</td>
+            <td>None</td>
+            <td>Inline fake data</td>
+          </tr>
+          <tr>
+            <td><strong>Jetchat</strong></td>
+            <td><code>createAndroidComposeRule</code> — swipe, click, keyboard, nav</td>
+            <td>None</td>
+            <td><code>exampleUiState</code> inline</td>
+          </tr>
+          <tr>
+            <td><strong>Jetsnack</strong></td>
+            <td><code>createAndroidComposeRule</code> — full navigation smoke</td>
+            <td>None</td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td><strong>JetNews</strong></td>
+            <td><code>createAndroidComposeRule</code> — nav, deep link, snackbar</td>
+            <td>None</td>
+            <td><code>BlockingFakePostsRepository</code>, <code>FakeInterestsRepository</code></td>
+          </tr>
+          <tr>
+            <td><strong>Jetcaster</strong></td>
+            <td>None</td>
+            <td>UseCase tests with <code>runTest</code></td>
+            <td><code>TestPodcastStore</code>, <code>TestEpisodeStore</code>, <code>TestCategoryStore</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Part 1: Two Test Rules -->
+  <section id="test-rules">
+    <div class="section-header">
+      <div class="section-number">02</div>
+      <div>
+        <h2>The Two Test Rules</h2>
+        <p>Choosing the wrong rule is the most common setup mistake. The choice depends on whether you own <code>setContent</code>.</p>
+      </div>
+    </div>
+
+    <h3>createComposeRule — you control the composable</h3>
+    <p>Use when testing an isolated screen or composable. You call <code>setContent {}</code> yourself.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><cmt>// JetLagged — no Activity context needed</cmt>
+<kw>class</kw> <cls>AppTest</cls> {
+    <ann>@get:Rule</ann>
+    <kw>val</kw> composeTestRule = <fn>createComposeRule</fn>()
+
+    <ann>@Before</ann>
+    <kw>fun</kw> <fn>setUp</fn>() {
+        composeTestRule.<fn>setContent</fn> {
+            <cls>JetLaggedTheme</cls> {
+                <fn>JetLaggedScreen</fn>()
+            }
+        }
+    }
+
+    <ann>@Test</ann>
+    <kw>fun</kw> <fn>app_launches</fn>() {
+        composeTestRule.<fn>onNodeWithText</fn>(<str>"JetLagged"</str>).<fn>assertIsDisplayed</fn>()
+    }
+}</code></pre>
+    </div>
+
+    <h3>createAndroidComposeRule&lt;Activity&gt; — Activity owns the content</h3>
+    <p>Use when testing full app navigation, or when you need <code>activity.getString(…)</code> for string resources.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><cmt>// Jetchat — needs Activity for Fragment + Navigation interop</cmt>
+<kw>class</kw> <cls>NavigationTest</cls> {
+    <ann>@get:Rule</ann>
+    <kw>val</kw> composeTestRule = <fn>createAndroidComposeRule</fn>&lt;<cls>NavActivity</cls>&gt;()
+
+    <ann>@Test</ann>
+    <kw>fun</kw> <fn>app_launches</fn>() {
+        <fn>assertEquals</fn>(<fn>getNavController</fn>().currentDestination?.id, R.id.nav_home)
+    }
+}</code></pre>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th><code>createComposeRule</code></th>
+            <th><code>createAndroidComposeRule&lt;Activity&gt;</code></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Controls <code>setContent</code></td>
+            <td><span class="yes-tag">Yes</span></td>
+            <td><span class="no-tag">No — Activity owns it</span></td>
+          </tr>
+          <tr>
+            <td>Needs Activity class</td>
+            <td><span class="no-tag">No</span></td>
+            <td><span class="yes-tag">Yes</span></td>
+          </tr>
+          <tr>
+            <td>Tests full app navigation</td>
+            <td><span class="no-tag">No</span></td>
+            <td><span class="yes-tag">Yes</span></td>
+          </tr>
+          <tr>
+            <td>Isolated composable tests</td>
+            <td><span class="yes-tag">Yes — preferred</span></td>
+            <td>Possible but overkill</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Part 2: Semantic Tree -->
+  <section id="semantic-tree">
+    <div class="section-header">
+      <div class="section-number">03</div>
+      <div>
+        <h2>The Semantic Tree</h2>
+        <p>Compose tests query the accessibility semantic tree — no View IDs, no XPath. If a node isn't in the tree, the test can't find it.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><cmt>// Find by visible text</cmt>
+composeTestRule.<fn>onNodeWithText</fn>(<str>"HOME"</str>).<fn>assertIsDisplayed</fn>()
+
+<cmt>// Find by content description (icons with no visible text)</cmt>
+composeTestRule.<fn>onNodeWithContentDescription</fn>(<str>"Open navigation drawer"</str>).<fn>performClick</fn>()
+
+<cmt>// Find by explicit test tag — best for non-accessible nodes</cmt>
+composeTestRule.<fn>onNodeWithTag</fn>(ConversationTestTag).<fn>assertIsDisplayed</fn>()
+
+<cmt>// Combined matchers</cmt>
+composeTestRule.<fn>onNode</fn>(<fn>hasText</fn>(<str>"composers"</str>) <kw>and</kw> <fn>isInDrawer</fn>()).<fn>performClick</fn>()
+
+<cmt>// Multiple matches — pick by index</cmt>
+composeTestRule.<fn>onAllNodes</fn>(<fn>hasText</fn>(manuel.name, substring = <kw>true</kw>))[<num>0</num>]
+    .<fn>performScrollTo</fn>()
+    .<fn>performClick</fn>()</code></pre>
+    </div>
+
+    <h3>Expose non-accessible nodes with testTag</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><cmt>// In your composable (production code):</cmt>
+<kw>const val</kw> ConversationTestTag = <str>"ConversationTest"</str>
+
+<fn>LazyColumn</fn>(modifier = <cls>Modifier</cls>.<fn>testTag</fn>(ConversationTestTag)) { ... }
+
+<cmt>// In the test:</cmt>
+composeTestRule.<fn>onNodeWithTag</fn>(ConversationTestTag).<fn>performTouchInput</fn> {
+    <fn>swipe</fn>(start = center, end = <cls>Offset</cls>(center.x, center.y + <num>500</num>), durationMillis = <num>200</num>)
+}</code></pre>
+    </div>
+
+    <div class="info-box warning">
+      <strong>Flakiness warning — useUnmergedTree</strong><br>
+      Some nodes get merged in the semantic tree for accessibility. If <code>onNodeWithTag</code> fails to find a node that should exist, pass <code>useUnmergedTree = true</code>:<br>
+      <code>composeTestRule.onNodeWithTag(tag, useUnmergedTree = true)</code><br>
+      See <a href="https://issuetracker.google.com/issues/184825850" target="_blank">issuetracker.google.com/issues/184825850</a>
+    </div>
+  </section>
+
+  <!-- Part 3: Interactions -->
+  <section id="interactions">
+    <div class="section-header">
+      <div class="section-number">04</div>
+      <div>
+        <h2>Common UI Interactions</h2>
+        <p>Gestures, text input, and waiting for async content.</p>
+      </div>
+    </div>
+
+    <h3>Click, scroll, swipe</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><cmt>// Simple click</cmt>
+composeTestRule.<fn>onNodeWithText</fn>(<str>"Chips"</str>).<fn>performClick</fn>()
+
+<cmt>// Scroll to item in LazyColumn, then click</cmt>
+composeTestRule.<fn>onAllNodes</fn>(<fn>hasText</fn>(name, substring = <kw>true</kw>))[<num>0</num>]
+    .<fn>performScrollTo</fn>()
+    .<fn>performClick</fn>()
+
+<cmt>// Swipe gesture (reveals "jump to bottom" button)</cmt>
+composeTestRule.<fn>onNodeWithTag</fn>(ConversationTestTag).<fn>performTouchInput</fn> {
+    <fn>swipe</fn>(
+        start = center,
+        end = <cls>Offset</cls>(center.x, center.y + <num>500</num>),
+        durationMillis = <num>200</num>,
+    )
+}</code></pre>
+    </div>
+
+    <h3>Text input</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><cmt>// Type into a text field</cmt>
+<fn>findTextInputField</fn>().<fn>performTextInput</fn>(<str>"Some text"</str>)
+
+<cmt>// Verify send button becomes enabled</cmt>
+<fn>findSendButton</fn>().<fn>assertIsEnabled</fn>()</code></pre>
+    </div>
+
+    <h3>Waiting for async content</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><cmt>// Block until exactly one node with this text appears</cmt>
+composeTestRule.<fn>waitUntilExactlyOneExists</fn>(
+    <fn>hasText</fn>(<str>"Use Dagger in Kotlin!"</str>, substring = <kw>true</kw>),
+    <num>5000L</num>  <cmt>// timeout in ms</cmt>
+)
+
+<cmt>// Block until at least one match appears</cmt>
+composeTestRule.<fn>waitUntilAtLeastOneExists</fn>(<fn>hasText</fn>(<str>"Topics"</str>), <num>5000L</num>)</code></pre>
+    </div>
+
+    <div class="info-box when">
+      <strong>Why waitUntil*?</strong><br>
+      Navigation and async data loading mean content doesn't appear instantly. These APIs block until the predicate is true or the timeout expires — avoiding flakiness from race conditions without arbitrary <code>Thread.sleep()</code> calls.
+    </div>
+  </section>
+
+  <!-- Part 4: Snackbar + snapshotFlow -->
+  <section id="snapshotflow">
+    <div class="section-header">
+      <div class="section-number">05</div>
+      <div>
+        <h2>Snackbar Testing with snapshotFlow</h2>
+        <p>JetNews — verifying a <code>SnackbarHostState</code> message using Kotlin Flow. The bridge between Compose State and coroutines.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — HomeScreenTests.kt (JetNews)</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><ann>@Test</ann>
+<kw>fun</kw> <fn>postsContainError_snackbarShown</fn>() {
+    <kw>val</kw> snackbarHostState = <cls>SnackbarHostState</cls>()
+
+    composeTestRule.<fn>setContent</fn> {
+        <cls>JetnewsTheme</cls> {
+            <fn>HomeFeedScreen</fn>(
+                uiState = <cls>HomeUiState</cls>.<cls>NoPosts</cls>(
+                    isLoading = <kw>false</kw>,
+                    errorMessages = <fn>listOf</fn>(<cls>ErrorMessage</cls>(<num>0L</num>, R.string.load_error)),
+                    searchInput = <str>""</str>,
+                ),
+                snackbarHostState = snackbarHostState,
+                <cmt>// ... other params</cmt>
+            )
+        }
+    }
+
+    <fn>runBlocking</fn> {
+        <cmt>// snapshotFlow converts Compose State → Kotlin Flow</cmt>
+        <kw>val</kw> actualSnackbarText = <fn>snapshotFlow</fn> { snackbarHostState.currentSnackbarData }
+            .<fn>filterNotNull</fn>()
+            .<fn>first</fn>()           <cmt>// suspend until first non-null value</cmt>
+            .visuals.message
+        <fn>assertEquals</fn>(expectedText, actualSnackbarText)
+    }
+}</code></pre>
+    </div>
+
+    <div class="info-box">
+      <strong>snapshotFlow</strong> re-emits whenever any Compose <code>State</code> it reads changes — it's the bridge from Compose's reactive state system to Kotlin coroutines. Perfect for asserting composable side-effects like showing a snackbar or triggering animation.
+    </div>
+  </section>
+
+  <!-- Part 5: Fake Dependencies -->
+  <section id="fakes">
+    <div class="section-header">
+      <div class="section-number">06</div>
+      <div>
+        <h2>Faking Dependencies for UI Tests</h2>
+        <p>Two patterns: full DI replacement via <code>TestAppContainer</code> (JetNews), or passing state inline (Jetchat).</p>
+      </div>
+    </div>
+
+    <h3>TestAppContainer pattern — JetNews</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — TestAppContainer.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><kw>class</kw> <cls>TestAppContainer</cls>(context: <cls>Context</cls>) : <cls>AppContainer</cls> {
+    <kw>override val</kw> postsRepository: <cls>PostsRepository</cls> <kw>by</kw> <fn>lazy</fn> {
+        <cls>BlockingFakePostsRepository</cls>()  <cmt>// synchronous — no network delay</cmt>
+    }
+    <kw>override val</kw> interestsRepository: <cls>InterestsRepository</cls> <kw>by</kw> <fn>lazy</fn> {
+        <cls>FakeInterestsRepository</cls>()
+    }
+}
+
+<cmt>// Extension to launch the whole app with fakes injected</cmt>
+<kw>fun</kw> <cls>ComposeContentTestRule</cls>.<fn>launchJetNewsApp</fn>(context: <cls>Context</cls>) {
+    <fn>setContent</fn> {
+        <fn>JetnewsApp</fn>(
+            appContainer = <cls>TestAppContainer</cls>(context),
+            isBackEnabled = <kw>true</kw>,
+            initialBackStack = <fn>listOf</fn>(<cls>HomeKey</cls>),
+        )
+    }
+}
+
+<cmt>// In every test:</cmt>
+<ann>@Before</ann>
+<kw>fun</kw> <fn>setUp</fn>() {
+    composeTestRule.<fn>launchJetNewsApp</fn>(<cls>ApplicationProvider</cls>.<fn>getApplicationContext</fn>())
+}</code></pre>
+    </div>
+
+    <div class="info-box">
+      <strong>Blocking vs non-blocking fakes:</strong> <code>BlockingFakePostsRepository</code> returns data synchronously (no <code>delay(800)</code>), unlike <code>FakePostsRepository</code> which simulates network lag. Synchronous fakes prevent flakiness caused by timing differences.
+    </div>
+
+    <h3>Inline fake data — Jetchat</h3>
+    <p>For tests without DI, pass state directly to the composable:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — ConversationTest.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><ann>@Before</ann>
+<kw>fun</kw> <fn>setUp</fn>() {
+    composeTestRule.<fn>setContent</fn> {
+        <fn>JetchatTheme</fn> {
+            <fn>ConversationContent</fn>(
+                uiState = conversationTestUiState,  <cmt>// inline fake — no DI</cmt>
+                navigateToProfile = { },
+                onNavIconPressed = { },
+            )
+        }
+    }
+}
+
+<cmt>// Build test data inline — double the messages so scroll tests make sense on tablets</cmt>
+<kw>private val</kw> conversationTestUiState = <cls>ConversationUiState</cls>(
+    initialMessages = exampleUiState.messages + exampleUiState.messages,
+    channelName = <str>"#composers"</str>,
+    channelMembers = <num>42</num>,
+)</code></pre>
+    </div>
+  </section>
+
+  <!-- Part 6: Unit Tests -->
+  <section id="unit-tests">
+    <div class="section-header">
+      <div class="section-number">07</div>
+      <div>
+        <h2>Unit Tests for Business Logic — Jetcaster</h2>
+        <p>The only app with proper unit tests. Shows how to test UseCases with coroutines using <code>runTest</code> and test repositories backed by <code>MutableStateFlow</code>.</p>
+      </div>
+    </div>
+
+    <h3>runTest for coroutine-based logic</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — PodcastCategoryFilterUseCaseTest.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><kw>class</kw> <cls>PodcastCategoryFilterUseCaseTest</cls> {
+    <kw>private val</kw> categoriesStore = <cls>TestCategoryStore</cls>()
+    <kw>val</kw> useCase = <cls>PodcastCategoryFilterUseCase</cls>(categoryStore = categoriesStore)
+
+    <ann>@Test</ann>
+    <kw>fun</kw> <fn>whenCategoryNull_emptyFlow</fn>() = <fn>runTest</fn> {
+        <kw>val</kw> resultFlow = <fn>useCase</fn>(<kw>null</kw>)
+
+        <cmt>// Emit data into fake store AFTER collecting the flow</cmt>
+        categoriesStore.<fn>setEpisodesFromPodcast</fn>(testCategory.id, testEpisodeToPodcast)
+        categoriesStore.<fn>setPodcastsInCategory</fn>(testCategory.id, testPodcasts)
+
+        <kw>val</kw> result = resultFlow.<fn>first</fn>()
+        <fn>assertTrue</fn>(result.topPodcasts.<fn>isEmpty</fn>())
+        <fn>assertTrue</fn>(result.episodes.<fn>isEmpty</fn>())
+    }
+
+    <ann>@Test</ann>
+    <kw>fun</kw> <fn>whenCategoryInfoNotNull_verifyLimitFlow</fn>() = <fn>runTest</fn> {
+        <kw>val</kw> resultFlow = <fn>useCase</fn>(testCategory.<fn>asExternalModel</fn>())
+
+        <cmt>// 8x episodes → UseCase must cap at 20 max</cmt>
+        categoriesStore.<fn>setEpisodesFromPodcast</fn>(testCategory.id, <fn>List</fn>(<num>8</num>) { testEpisodeToPodcast }.<fn>flatten</fn>())
+        categoriesStore.<fn>setPodcastsInCategory</fn>(testCategory.id, <fn>List</fn>(<num>4</num>) { testPodcasts }.<fn>flatten</fn>())
+
+        <kw>val</kw> result = resultFlow.<fn>first</fn>()
+        <fn>assertEquals</fn>(<num>20</num>, result.episodes.size)
+        <fn>assertEquals</fn>(<num>10</num>, result.topPodcasts.size)
+    }
+}</code></pre>
+    </div>
+
+    <div class="info-box when">
+      <strong>runTest vs runBlocking:</strong> <code>runTest</code> uses a <code>TestCoroutineScheduler</code> — virtual time advances instantly so no real delays in tests. <code>runBlocking</code> is fine for UI tests but blocks a real thread; <code>runTest</code> is correct for testing coroutine-based production code.
+    </div>
+
+    <h3>MutableStateFlow test repositories</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — TestPodcastStore.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><kw>class</kw> <cls>TestPodcastStore</cls> : <cls>PodcastStore</cls> {
+    <kw>private val</kw> podcastFlow = <cls>MutableStateFlow</cls>&lt;<cls>List</cls>&lt;<cls>Podcast</cls>&gt;&gt;(<fn>listOf</fn>())
+    <kw>private val</kw> followedPodcasts = <fn>mutableSetOf</fn>&lt;<cls>String</cls>&gt;()
+
+    <kw>override fun</kw> <fn>podcastsSortedByLastEpisode</fn>(limit: <cls>Int</cls>): <cls>Flow</cls>&lt;<cls>List</cls>&lt;<cls>PodcastWithExtraInfo</cls>&gt;&gt; =
+        podcastFlow.<fn>map</fn> { podcasts ->
+            podcasts.<fn>map</fn> { p ->
+                <cls>PodcastWithExtraInfo</cls>().<fn>apply</fn> {
+                    podcast = p
+                    isFollowed = followedPodcasts.<fn>contains</fn>(p.uri)
+                }
+            }
+        }
+
+    <kw>override suspend fun</kw> <fn>addPodcast</fn>(podcast: <cls>Podcast</cls>) = podcastFlow.<fn>update</fn> { it + podcast }
+    <kw>override suspend fun</kw> <fn>togglePodcastFollowed</fn>(uri: <cls>String</cls>) { <cmt>/* toggle logic */</cmt> }
+}</code></pre>
+    </div>
+
+    <div class="concept-grid">
+      <div>
+        <h4>Why MutableStateFlow in test repos?</h4>
+        <ul>
+          <li>Test controls exactly what data the UseCase sees</li>
+          <li>Flow-based — matches production interface exactly</li>
+          <li>Thread-safe — <code>update {}</code> is atomic</li>
+          <li>No threading issues or synchronization needed</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Flow ordering test</h4>
+        <div class="code-block" style="margin-top:0">
+          <div class="code-header">
+            <span class="code-lang">Kotlin</span>
+            <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          </div>
+          <pre><code><cmt>// Verify descending sort</cmt>
+result.<fn>first</fn>().<fn>zipWithNext</fn> { ep1, ep2 ->
+    ep1.episode.published > ep2.episode.published
+}.<fn>all</fn> { it }</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Part 7: Navigation Testing -->
+  <section id="nav-testing">
+    <div class="section-header">
+      <div class="section-number">08</div>
+      <div>
+        <h2>Navigation Testing</h2>
+        <p>Testing Fragment + Compose navigation via NavController ID checks and custom SemanticsMatcher.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — NavigationTest.kt (Jetchat)</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><ann>@Test</ann>
+<kw>fun</kw> <fn>profileScreen_back_conversationScreen</fn>() {
+    <kw>val</kw> navController = <fn>getNavController</fn>()
+    <fn>navigateToProfile</fn>(<str>"Taylor Brooks"</str>)
+    <fn>assertEquals</fn>(navController.currentDestination?.id, R.id.nav_profile)
+
+    <cls>Espresso</cls>.<fn>pressBack</fn>()  <cmt>// works for Fragment navigation</cmt>
+
+    <fn>assertEquals</fn>(navController.currentDestination?.id, R.id.nav_home)
+}
+
+<cmt>// Custom semantic matcher — only match items inside the nav drawer</cmt>
+<kw>private fun</kw> <fn>isInDrawer</fn>() = <fn>hasAnyAncestor</fn>(<fn>isDrawer</fn>())
+<kw>private fun</kw> <fn>isDrawer</fn>() = <cls>SemanticsMatcher</cls>.<fn>expectValue</fn>(
+    <cls>SemanticsProperties</cls>.PaneTitle,
+    activity.<fn>getString</fn>(androidx.compose.ui.R.string.navigation_menu),
+)
+
+<cmt>// Regression test — back stack must not accumulate after multiple nav sequences</cmt>
+<ann>@Test</ann>
+<kw>fun</kw> <fn>drawer_conversationScreen_backstackPopUp</fn>() {
+    <fn>navigateToProfile</fn>(<str>"Ali Conors (you)"</str>)
+    <fn>navigateToHome</fn>()
+    <fn>navigateToProfile</fn>(<str>"Taylor Brooks"</str>)
+    <fn>navigateToHome</fn>()
+    <fn>assertEquals</fn>(<fn>getNavController</fn>().currentDestination?.id, R.id.nav_home)
+}</code></pre>
+    </div>
+
+    <div class="info-box">
+      <strong>SemanticsMatcher</strong> lets you build custom predicates over any semantic property. Here it filters clicks to only items inside the navigation drawer, preventing false matches against nodes with the same text elsewhere in the tree.
+    </div>
+  </section>
+
+  <!-- Part 8: Recomposition persistence -->
+  <section id="recomposition">
+    <div class="section-header">
+      <div class="section-number">09</div>
+      <div>
+        <h2>State Persists Through Recomposition</h2>
+        <p>Changing a <code>MutableStateFlow</code> in the test triggers a full recomposition. If <code>rememberLazyListState</code> wasn't remembered properly, scroll position would reset and the test would catch it.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — ConversationTest.kt (Jetchat)</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><kw>private val</kw> themeIsDark = <cls>MutableStateFlow</cls>(<kw>false</kw>)
+
+<ann>@Before</ann>
+<kw>fun</kw> <fn>setUp</fn>() {
+    composeTestRule.<fn>setContent</fn> {
+        <fn>JetchatTheme</fn>(isDarkTheme = themeIsDark.<fn>collectAsStateWithLifecycle</fn>(<kw>false</kw>).value) {
+            <fn>ConversationContent</fn>(uiState = conversationTestUiState, ...)
+        }
+    }
+}
+
+<ann>@Test</ann>
+<kw>fun</kw> <fn>changeTheme_scrollIsPersisted</fn>() {
+    <cmt>// Scroll up to make "Jump to Bottom" appear</cmt>
+    composeTestRule.<fn>onNodeWithTag</fn>(ConversationTestTag).<fn>performTouchInput</fn> {
+        <fn>swipe</fn>(start = center, end = <cls>Offset</cls>(center.x, center.y + <num>500</num>), durationMillis = <num>200</num>)
+    }
+    <fn>findJumpToBottom</fn>().<fn>assertIsDisplayed</fn>()
+
+    <cmt>// Trigger full recomposition by changing theme</cmt>
+    themeIsDark.value = <kw>true</kw>
+
+    <cmt>// Scroll position must survive — if LazyListState lost, button disappears</cmt>
+    <fn>findJumpToBottom</fn>().<fn>assertIsDisplayed</fn>()
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- Summary -->
+  <section id="summary">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <div>
+        <h2>Summary — Decision Tree &amp; Source Map</h2>
+      </div>
+    </div>
+
+    <div class="flowchart">
+      <div class="flow-row">
+        <div class="flow-box start">Testing a single composable?</div>
+      </div>
+      <div class="flow-arrow">↓ yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ no</div>
+      <div class="flow-row">
+        <div class="flow-box"><code>createComposeRule</code><br>+ <code>setContent {}</code></div>
+        <div class="flow-box">Testing full app navigation?</div>
+      </div>
+      <div class="flow-arrow">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ no</div>
+      <div class="flow-row">
+        <div></div>
+        <div class="flow-box"><code>createAndroidComposeRule&lt;Activity&gt;</code></div>
+        <div class="flow-box">UseCase / logic only?<br>→ <code>runTest</code> + <code>TestRepository</code></div>
+      </div>
+    </div>
+
+    <div class="table-wrapper" style="margin-top: 32px">
+      <table>
+        <thead>
+          <tr>
+            <th>Pattern</th>
+            <th>Best Source</th>
+            <th>Key File</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>createComposeRule</code> smoke test</td>
+            <td>JetLagged</td>
+            <td><code>AppTest.kt</code></td>
+          </tr>
+          <tr>
+            <td>Navigation smoke test (all tabs)</td>
+            <td>Jetsnack</td>
+            <td><code>AppTest.kt</code></td>
+          </tr>
+          <tr>
+            <td>Snackbar via <code>snapshotFlow</code></td>
+            <td>JetNews</td>
+            <td><code>HomeScreenTests.kt</code></td>
+          </tr>
+          <tr>
+            <td>TestAppContainer — DI replacement</td>
+            <td>JetNews</td>
+            <td><code>TestAppContainer.kt</code>, <code>TestHelper.kt</code></td>
+          </tr>
+          <tr>
+            <td>Swipe + <code>waitUntil*</code></td>
+            <td>JetNews</td>
+            <td><code>JetnewsTests.kt</code></td>
+          </tr>
+          <tr>
+            <td>Gesture testing (swipe, emoji, keyboard)</td>
+            <td>Jetchat</td>
+            <td><code>ConversationTest.kt</code>, <code>UserInputTest.kt</code></td>
+          </tr>
+          <tr>
+            <td>Fragment nav + <code>SemanticsMatcher</code></td>
+            <td>Jetchat</td>
+            <td><code>NavigationTest.kt</code></td>
+          </tr>
+          <tr>
+            <td>UseCase unit test + <code>runTest</code></td>
+            <td>Jetcaster</td>
+            <td><code>PodcastCategoryFilterUseCaseTest.kt</code></td>
+          </tr>
+          <tr>
+            <td><code>MutableStateFlow</code> test repositories</td>
+            <td>Jetcaster</td>
+            <td><code>TestPodcastStore.kt</code>, <code>TestEpisodeStore.kt</code></td>
+          </tr>
+          <tr>
+            <td>Recomposition persistence test</td>
+            <td>Jetchat</td>
+            <td><code>ConversationTest.changeTheme_scrollIsPersisted</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script src="scripts/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Design System — Compose Samples</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/design-system.css" />
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside>
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-icon">🧩</div>
+      <div>
+        <h2>Android Compose</h2>
+        <p>Learning Guide</p>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-section-label">Phases</div>
+      <a class="nav-item" href="theming-styles-guide.html">
+        <span>🎨</span> Phase 2 — Theming
+      </a>
+      <a class="nav-item active" href="design-system.html">
+        <span>🧩</span> Phase 2 — Design System
+      </a>
+      <a class="nav-item" href="architecture-state.html">
+        <span>🏗</span> Phase 3 — Architecture
+      </a>
+      <a class="nav-item" href="navigation.html">
+        <span>🧭</span> Phase 4 — Navigation
+      </a>
+      <a class="nav-item" href="reusable-components.html">
+        <span>♻️</span> Phase 5 — Components
+      </a>
+      <a class="nav-item" href="testing-performance.html">
+        <span>🧪</span> Phase 6 — Testing
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Overview</div>
+      <a href="#overview" class="nav-item">📊 Repo Overview</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Part 1 — Tokens</div>
+      <a href="#color-tokens" class="nav-item">🎨 Color Tokens</a>
+      <a href="#typography-tokens" class="nav-item">✏️ Typography Tokens</a>
+      <a href="#shape-tokens" class="nav-item">⬛ Shape Tokens</a>
+      <a href="#spacing-tokens" class="nav-item">📐 Spacing Tokens</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Part 2 — Components</div>
+      <a href="#jetnews-components" class="nav-item">📰 JetNews (Thin)</a>
+      <a href="#jetchat-components" class="nav-item">💬 Jetchat (Medium)</a>
+      <a href="#jetsnack-components" class="nav-item">🍿 Jetsnack (Full)</a>
+      <a href="#jetcaster-components" class="nav-item">🎙 Jetcaster (Shared)</a>
+      <a href="#reply-components" class="nav-item">📧 Reply (Adaptive)</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Part 3 — Patterns</div>
+      <a href="#patterns" class="nav-item">🔀 Token Access Patterns</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Guides</div>
+      <a href="#decision" class="nav-item">🧭 Decision Guide</a>
+      <a href="#lessons" class="nav-item">📚 What Each App Teaches</a>
+      <a href="#antipatterns" class="nav-item">⚠️ Anti-Patterns</a>
+      <a href="#summary" class="nav-item">✅ Summary</a>
+    </div>
+  </nav>
+</aside>
+
+<!-- ── Main ── -->
+<main>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">📖 Phase 2 · Day 1–2</div>
+    <h1>Design System</h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="dot"></span> 6 sample apps analysed</div>
+      <div class="hero-meta-item">4 token access patterns</div>
+      <div class="hero-meta-item">5 anti-patterns covered</div>
+      <div class="hero-meta-item"><span class="badge badge-intermediate">Intermediate</span></div>
+    </div>
+  </div>
+
+  <!-- ── OVERVIEW ── -->
+  <section id="overview">
+    <div class="section-header">
+      <div class="section-number">📊</div>
+      <div>
+        <h2>Repo Overview</h2>
+        <p>How each sample app approaches its design system, from READMEs.</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>App</th>
+            <th>Complexity</th>
+            <th>Design System Approach</th>
+            <th>Key Feature</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>JetNews</td>
+            <td><span class="badge badge-intermediate">Medium</span></td>
+            <td>Pure Material 3</td>
+            <td>Tonal elevation, adaptive layout</td>
+          </tr>
+          <tr>
+            <td>Jetchat</td>
+            <td><span class="badge badge-beginner">Low</span></td>
+            <td>M3 + Material You dynamic color</td>
+            <td>Downloadable fonts, GlanceTheme widget</td>
+          </tr>
+          <tr>
+            <td>Jetsnack</td>
+            <td><span class="badge badge-intermediate">Medium</span></td>
+            <td><strong>Fully custom design system</strong></td>
+            <td>No M3 color — own palette + wrappers</td>
+          </tr>
+          <tr>
+            <td>Jetcaster</td>
+            <td><span class="badge badge-advanced">Advanced</span></td>
+            <td>Shared <code>core/designsystem</code> module</td>
+            <td>Multi-form-factor (mobile, TV, Wear)</td>
+          </tr>
+          <tr>
+            <td>Reply</td>
+            <td><span class="badge badge-intermediate">Medium</span></td>
+            <td>M3 + contrast tiers</td>
+            <td>Adaptive navigation (phone → tablet → foldable)</td>
+          </tr>
+          <tr>
+            <td>JetLagged</td>
+            <td><span class="badge badge-intermediate">Medium</span></td>
+            <td>CompositionLocal extra tokens</td>
+            <td>Custom layouts, AGSL shaders, graphs</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Spectrum bar -->
+    <div class="spectrum-bar">
+      <div class="spectrum-label">Token Access Spectrum</div>
+      <div class="spectrum-track">
+        <div class="spectrum-node" style="left:5%">
+          <div class="spectrum-dot" style="background:var(--green)"></div>
+          <div class="spectrum-app">JetNews</div>
+          <div class="spectrum-desc">Raw M3</div>
+        </div>
+        <div class="spectrum-node" style="left:25%">
+          <div class="spectrum-dot" style="background:var(--green)"></div>
+          <div class="spectrum-app">Reply</div>
+          <div class="spectrum-desc">M3 + contrast</div>
+        </div>
+        <div class="spectrum-node" style="left:45%">
+          <div class="spectrum-dot" style="background:var(--yellow)"></div>
+          <div class="spectrum-app">Jetchat</div>
+          <div class="spectrum-desc">M3 + dynamic</div>
+        </div>
+        <div class="spectrum-node" style="left:62%">
+          <div class="spectrum-dot" style="background:var(--yellow)"></div>
+          <div class="spectrum-app">JetLagged</div>
+          <div class="spectrum-desc">M3 + extra tokens</div>
+        </div>
+        <div class="spectrum-node" style="left:78%">
+          <div class="spectrum-dot" style="background:var(--accent)"></div>
+          <div class="spectrum-app">Jetcaster</div>
+          <div class="spectrum-desc">Shared module</div>
+        </div>
+        <div class="spectrum-node" style="left:96%">
+          <div class="spectrum-dot" style="background:var(--red)"></div>
+          <div class="spectrum-app">Jetsnack</div>
+          <div class="spectrum-desc">Full custom</div>
+        </div>
+      </div>
+      <div class="spectrum-axis">
+        <span>← Closer to Material 3</span>
+        <span>Further from Material 3 →</span>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── PART 1: TOKENS ── -->
+  <section id="color-tokens">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div>
+        <h2>Color Tokens</h2>
+        <p>Named, reusable color values that form the palette of the design system.</p>
+      </div>
+    </div>
+
+    <!-- JetNews -->
+    <h3>JetNews — M3 Slot Model (28 named roles)</h3>
+    <p>Every color is named after its <strong>role</strong>, not its visual appearance. The M3 slot model decouples the name from the actual hue so it can swap between light/dark without logic changes.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="cmt">// Color.kt</span>
+<span class="kw">val</span> <span class="cls">Red700</span> = <span class="fn">Color</span>(<span class="num">0xFFBF0031</span>)
+
+<span class="cmt">// All 28 M3 roles defined:</span>
+<span class="kw">val</span> md_theme_light_primary            = <span class="cls">Red700</span>
+<span class="kw">val</span> md_theme_light_onPrimary          = <span class="fn">Color</span>(<span class="num">0xFFFFFFFF</span>)
+<span class="kw">val</span> md_theme_light_primaryContainer   = <span class="fn">Color</span>(<span class="num">0xFFFFDAD9</span>)
+<span class="kw">val</span> md_theme_light_onPrimaryContainer = <span class="fn">Color</span>(<span class="num">0xFF40000A</span>)
+<span class="cmt">// ... secondary, tertiary, error, background, surface families</span></code></pre>
+    </div>
+
+    <div class="info-box purpose">
+      <div class="info-box-title">The M3 Role System</div>
+      <ul>
+        <li><code>primary</code> / <code>onPrimary</code> — main brand color + text on top of it</li>
+        <li><code>primaryContainer</code> / <code>onPrimaryContainer</code> — tinted container + content inside</li>
+        <li><code>surface</code> / <code>onSurface</code> — card and sheet backgrounds + content</li>
+        <li><code>background</code> / <code>onBackground</code> — screen background + content</li>
+        <li><code>error</code> / <code>onError</code> / <code>errorContainer</code> / <code>onErrorContainer</code> — error states</li>
+      </ul>
+    </div>
+
+    <!-- Jetcaster -->
+    <h3>Jetcaster — Warm Dark Palette (3 contrast tiers)</h3>
+    <p>Jetcaster's <code>core/designsystem</code> module defines a warm, dark-forward palette with three contrast tiers per mode (standard / mediumContrast / highContrast).</p>
+
+    <div class="swatch-row">
+      <div class="swatch" style="background:#FF792C"><span>primary<br/>#FF792C</span></div>
+      <div class="swatch" style="background:#FFE523"><span>secondary<br/>#FFE523</span></div>
+      <div class="swatch" style="background:#FF9AD8"><span>tertiary<br/>#FF9AD8</span></div>
+      <div class="swatch" style="background:#261604"><span>surfaceDark<br/>#261604</span></div>
+      <div class="swatch" style="background:#151218"><span>bgDark<br/>#151218</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — core/designsystem/theme/Color.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">val</span> primaryLight   = <span class="fn">Color</span>(<span class="num">0xFFFF792C</span>)  <span class="cmt">// vivid orange</span>
+<span class="kw">val</span> secondaryLight = <span class="fn">Color</span>(<span class="num">0xFFFFE523</span>)  <span class="cmt">// bright yellow</span>
+<span class="kw">val</span> tertiaryLight  = <span class="fn">Color</span>(<span class="num">0xFFFF9AD8</span>)  <span class="cmt">// pink</span>
+<span class="kw">val</span> surfaceDark    = <span class="fn">Color</span>(<span class="num">0xFF261604</span>)  <span class="cmt">// very dark brown</span>
+<span class="kw">val</span> backgroundDark = <span class="fn">Color</span>(<span class="num">0xFF151218</span>)  <span class="cmt">// near-black purple-tinted</span></code></pre>
+    </div>
+
+    <!-- Jetsnack -->
+    <h3>Jetsnack — Custom 11-Step Color Ramps</h3>
+    <p>Jetsnack rejects M3 color roles entirely and defines its own semantic color system based on named tonal ramps — each ramp runs from step 0 (darkest) to step 11 (lightest).</p>
+
+    <div class="ramp-grid">
+      <div>
+        <div class="ramp-label">Shadow</div>
+        <div class="ramp">
+          <div class="ramp-step" style="background:#1B0E00" title="#1B0E00">0</div>
+          <div class="ramp-step" style="background:#33180B" title="#33180B">1</div>
+          <div class="ramp-step" style="background:#4B2515" title="#4B2515">2</div>
+          <div class="ramp-step" style="background:#633220" title="#633220">3</div>
+          <div class="ramp-step" style="background:#7B402B" title="#7B402B">4</div>
+          <div class="ramp-step" style="background:#935037" title="#935037">5</div>
+          <div class="ramp-step" style="background:#AB6043" title="#AB6043">6</div>
+          <div class="ramp-step" style="background:#C37150" title="#C37150">7</div>
+          <div class="ramp-step" style="background:#D4896A" title="#D4896A">8</div>
+          <div class="ramp-step" style="background:#E4A98A" title="#E4A98A">9</div>
+          <div class="ramp-step" style="background:#F2CAAF" title="#F2CAAF">10</div>
+          <div class="ramp-step" style="background:#FFF7F2;color:#333" title="#FFF7F2">11</div>
+        </div>
+      </div>
+      <div>
+        <div class="ramp-label">Ocean</div>
+        <div class="ramp">
+          <div class="ramp-step" style="background:#003787">0</div>
+          <div class="ramp-step" style="background:#0A439A">1</div>
+          <div class="ramp-step" style="background:#1450AB">2</div>
+          <div class="ramp-step" style="background:#1F5EBC">3</div>
+          <div class="ramp-step" style="background:#2A6DCD">4</div>
+          <div class="ramp-step" style="background:#387BDE">5</div>
+          <div class="ramp-step" style="background:#5A94E8">6</div>
+          <div class="ramp-step" style="background:#7AADF0">7</div>
+          <div class="ramp-step" style="background:#9DC5F5">8</div>
+          <div class="ramp-step" style="background:#BDDBFA">9</div>
+          <div class="ramp-step" style="background:#D2EAFF;color:#333">10</div>
+          <div class="ramp-step" style="background:#D7E2FF;color:#333">11</div>
+        </div>
+      </div>
+      <div>
+        <div class="ramp-label">Lavender</div>
+        <div class="ramp">
+          <div class="ramp-step" style="background:#2B0080">0</div>
+          <div class="ramp-step" style="background:#3A0FA0">1</div>
+          <div class="ramp-step" style="background:#4D20B8">2</div>
+          <div class="ramp-step" style="background:#6035CC">3</div>
+          <div class="ramp-step" style="background:#724ADA">4</div>
+          <div class="ramp-step" style="background:#855FE8">5</div>
+          <div class="ramp-step" style="background:#9776F2">6</div>
+          <div class="ramp-step" style="background:#AA8FF7">7</div>
+          <div class="ramp-step" style="background:#BEAAFC">8</div>
+          <div class="ramp-step" style="background:#D3C6FE">9</div>
+          <div class="ramp-step" style="background:#E3D8FF;color:#333">10</div>
+          <div class="ramp-step" style="background:#EDE7FF;color:#333">11</div>
+        </div>
+      </div>
+      <div>
+        <div class="ramp-label">Rose</div>
+        <div class="ramp">
+          <div class="ramp-step" style="background:#500034">0</div>
+          <div class="ramp-step" style="background:#6A0048">1</div>
+          <div class="ramp-step" style="background:#84005D">2</div>
+          <div class="ramp-step" style="background:#9E1573">3</div>
+          <div class="ramp-step" style="background:#B82B89">4</div>
+          <div class="ramp-step" style="background:#D044A0">5</div>
+          <div class="ramp-step" style="background:#E45FB7">6</div>
+          <div class="ramp-step" style="background:#F07ACE">7</div>
+          <div class="ramp-step" style="background:#F99AE0">8</div>
+          <div class="ramp-step" style="background:#FFBCEE">9</div>
+          <div class="ramp-step" style="background:#FFD6F4;color:#333">10</div>
+          <div class="ramp-step" style="background:#FFE4F3;color:#333">11</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — JetsnackColors semantic mapping</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">data class</span> <span class="cls">JetsnackColors</span>(
+    <span class="kw">val</span> gradient6_1: <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,        <span class="cmt">// 6-stop gradient for hero surfaces</span>
+    <span class="kw">val</span> gradient3_1: <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,        <span class="cmt">// 3-stop gradient for cards</span>
+    <span class="kw">val</span> gradient2_1: <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,        <span class="cmt">// 2-stop gradient for buttons</span>
+    <span class="kw">val</span> brand: <span class="cls">Color</span>,                   <span class="cmt">// primary brand color</span>
+    <span class="kw">val</span> interactivePrimary: <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;, <span class="cmt">// gradient list for buttons</span>
+    <span class="kw">val</span> textPrimary: <span class="cls">Color</span>,
+    <span class="kw">val</span> textInteractive: <span class="cls">Color</span>,
+    <span class="kw">val</span> tornado1: <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt;,
+    <span class="kw">val</span> isDark: <span class="cls">Boolean</span>
+)</code></pre>
+    </div>
+
+    <div class="info-box when">
+      <div class="info-box-title">Why Ramps?</div>
+      <p>An 11-step ramp gives a full tonal range from dark to light for a single hue — identical to how M3's internal tonal palettes work. Jetsnack hand-picks steps from these ramps to assemble gradients, giving precise control over every shade.</p>
+    </div>
+
+    <!-- JetLagged extra colors -->
+    <h3>JetLagged — Domain-Specific Tokens via CompositionLocal</h3>
+    <p>JetLagged extends M3 with four sleep-stage colors that have no M3 equivalent. These tokens are domain-specific — they only make sense in a sleep tracker context.</p>
+
+    <div class="swatch-row">
+      <div class="swatch" style="background:#1B998B"><span>sleepAwake<br/>#1B998B</span></div>
+      <div class="swatch" style="background:#3BCEAC"><span>sleepRem<br/>#3BCEAC</span></div>
+      <div class="swatch" style="background:#8185FC"><span>sleepLight<br/>#8185FC</span></div>
+      <div class="swatch" style="background:#FC424A"><span>sleepDeep<br/>#FC424A</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — JetLagged extra tokens</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">data class</span> <span class="cls">JetLaggedExtraColors</span>(
+    <span class="kw">val</span> sleepAwake: <span class="cls">Color</span> = <span class="fn">Color</span>(<span class="num">0xFF1B998B</span>),
+    <span class="kw">val</span> sleepRem:   <span class="cls">Color</span> = <span class="fn">Color</span>(<span class="num">0xFF3BCEAC</span>),
+    <span class="kw">val</span> sleepLight: <span class="cls">Color</span> = <span class="fn">Color</span>(<span class="num">0xFF8185FC</span>),
+    <span class="kw">val</span> sleepDeep:  <span class="cls">Color</span> = <span class="fn">Color</span>(<span class="num">0xFFFC424A</span>),
+)
+
+<span class="cmt">// Consumed anywhere in the composition tree:</span>
+<span class="kw">val</span> extraColors = <span class="cls">LocalExtraColors</span>.current
+<span class="fn">Text</span>(color = extraColors.sleepDeep)</code></pre>
+    </div>
+  </section>
+
+  <!-- ── TYPOGRAPHY ── -->
+  <section id="typography-tokens">
+    <div class="section-header">
+      <div class="section-number">1.2</div>
+      <div>
+        <h2>Typography Tokens</h2>
+        <p>Font families, weights, sizes and line-break strategies used across the samples.</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>App</th>
+            <th>Font Family</th>
+            <th>Loading Strategy</th>
+            <th>Notable Feature</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>JetNews</td>
+            <td><code>Montserrat</code></td>
+            <td>Bundled <code>res/font/</code></td>
+            <td><code>LineBreak.Heading</code> / <code>LineBreak.Paragraph</code></td>
+          </tr>
+          <tr>
+            <td>Jetchat</td>
+            <td><code>Karla</code> + <code>Montserrat</code></td>
+            <td>Google Fonts API (runtime)</td>
+            <td><code>GoogleFont.Provider</code> — no font files in APK</td>
+          </tr>
+          <tr>
+            <td>Jetcaster</td>
+            <td><code>RobotoFlex</code> + <code>Montserrat</code></td>
+            <td>Bundled <code>res/font/</code></td>
+            <td>Variable font (<code>FontWeight(738)</code> exact axis)</td>
+          </tr>
+          <tr>
+            <td>JetLagged</td>
+            <td><code>Lato</code></td>
+            <td>Google Fonts API (runtime)</td>
+            <td>Named semantic styles: <code>TitleBarStyle</code>, <code>HeadingStyle</code></td>
+          </tr>
+          <tr>
+            <td>Jetsnack</td>
+            <td><code>Montserrat</code> + <code>Karla</code></td>
+            <td>Bundled <code>res/font/</code></td>
+            <td>Mixed families per scale: Montserrat display, Karla body</td>
+          </tr>
+          <tr>
+            <td>Reply</td>
+            <td>Default M3</td>
+            <td>System</td>
+            <td>Full 5-level type scale via M3 defaults</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>JetNews — LineBreak Hints</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — Type.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">val</span> JetnewsTypography = <span class="fn">Typography</span>(
+    headlineLarge = <span class="cls">TextStyle</span>(
+        fontFamily = Montserrat,
+        lineBreak = <span class="cls">LineBreak</span>.Heading,    <span class="cmt">// whole-word breaks for titles</span>
+    ),
+    bodyLarge = <span class="cls">TextStyle</span>(
+        fontFamily = Montserrat,
+        lineBreak = <span class="cls">LineBreak</span>.Paragraph,  <span class="cmt">// balanced breaks for reading</span>
+    ),
+)</code></pre>
+    </div>
+
+    <h3>Jetcaster — Variable Font (RobotoFlex)</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — core/designsystem/theme/Type.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">val</span> JetcasterTypography = <span class="fn">Typography</span>(
+    displayLarge = <span class="cls">TextStyle</span>(
+        fontFamily = RobotoFlex,        <span class="cmt">// variable font — continuous weight axis</span>
+        fontWeight = <span class="cls">FontWeight</span>(<span class="num">738</span>),   <span class="cmt">// exact value on 1–1000 axis</span>
+        fontSize = <span class="num">64</span>.sp,
+    ),
+    headlineLarge = <span class="cls">TextStyle</span>(
+        fontFamily = Montserrat,        <span class="cmt">// static font for headings</span>
+        fontWeight = <span class="cls">FontWeight</span>.W500,
+        fontSize = <span class="num">32</span>.sp,
+    ),
+)</code></pre>
+    </div>
+
+    <h3>JetLagged — Named Semantic Styles</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — Type.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="cmt">// Styles named by purpose, not M3 slot name:</span>
+<span class="kw">val</span> TitleBarStyle = <span class="cls">TextStyle</span>(fontFamily = Lato, fontWeight = <span class="cls">FontWeight</span>.Bold, fontSize = <span class="num">22</span>.sp)
+<span class="kw">val</span> HeadingStyle  = <span class="cls">TextStyle</span>(...)
+<span class="kw">val</span> TitleStyle    = <span class="cls">TextStyle</span>(...)
+<span class="kw">val</span> BodyStyle     = <span class="cls">TextStyle</span>(...)
+
+<span class="cmt">// Consumed directly — no MaterialTheme.typography lookup:</span>
+<span class="fn">Text</span>(text = title, style = TitleBarStyle)</code></pre>
+    </div>
+  </section>
+
+  <!-- ── SHAPE ── -->
+  <section id="shape-tokens">
+    <div class="section-header">
+      <div class="section-number">1.3</div>
+      <div>
+        <h2>Shape Tokens</h2>
+        <p>Corner radii from sharp (0dp) to fully pill (50%), and what each choice communicates.</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>App</th>
+            <th>extraSmall</th>
+            <th>small</th>
+            <th>medium</th>
+            <th>large</th>
+            <th>extraLarge</th>
+            <th>Philosophy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>JetNews</td>
+            <td>—</td>
+            <td>4dp</td>
+            <td>4dp</td>
+            <td>8dp</td>
+            <td>—</td>
+            <td>Nearly flat — minimal rounding</td>
+          </tr>
+          <tr>
+            <td>Jetsnack</td>
+            <td>—</td>
+            <td>50% pill</td>
+            <td>20dp</td>
+            <td>0dp square</td>
+            <td>—</td>
+            <td>Bold contrast: pill buttons, sharp hero overlays</td>
+          </tr>
+          <tr>
+            <td>Reply</td>
+            <td>4dp</td>
+            <td>8dp</td>
+            <td>12dp</td>
+            <td>16dp</td>
+            <td>32dp</td>
+            <td>Full 5-level M3 scale</td>
+          </tr>
+          <tr>
+            <td>Jetchat</td>
+            <td>—</td>
+            <td>default</td>
+            <td>default</td>
+            <td>default</td>
+            <td>—</td>
+            <td>All M3 defaults</td>
+          </tr>
+          <tr>
+            <td>Jetcaster</td>
+            <td>—</td>
+            <td>circular</td>
+            <td>default</td>
+            <td>16dp</td>
+            <td>—</td>
+            <td>Media card rounding</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="shape-demo-row">
+      <div class="shape-demo">
+        <div class="shape-box" style="border-radius:4px">4dp</div>
+        <div class="shape-app">JetNews small</div>
+      </div>
+      <div class="shape-demo">
+        <div class="shape-box" style="border-radius:8px">8dp</div>
+        <div class="shape-app">Reply small</div>
+      </div>
+      <div class="shape-demo">
+        <div class="shape-box" style="border-radius:16px">16dp</div>
+        <div class="shape-app">Reply large</div>
+      </div>
+      <div class="shape-demo">
+        <div class="shape-box" style="border-radius:32px">32dp</div>
+        <div class="shape-app">Reply xLarge</div>
+      </div>
+      <div class="shape-demo">
+        <div class="shape-box" style="border-radius:999px">Pill</div>
+        <div class="shape-app">Jetsnack small</div>
+      </div>
+      <div class="shape-demo">
+        <div class="shape-box" style="border-radius:0">0dp</div>
+        <div class="shape-app">Jetsnack large</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SPACING ── -->
+  <section id="spacing-tokens">
+    <div class="section-header">
+      <div class="section-number">1.4</div>
+      <div>
+        <h2>Spacing Tokens</h2>
+        <p>Named layout constants — only Jetcaster formalizes these in the shared module.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — core/designsystem/theme/Keylines.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="kw">val</span> Keyline1 = <span class="num">16</span>.dp   <span class="cmt">// standard content margin</span></code></pre>
+    </div>
+
+    <div class="info-box when">
+      <div class="info-box-title">Why Name Spacing?</div>
+      <p>This single named constant is referenced across all screens (mobile, TV, Wear) for consistent left/right padding. Other apps use <code>16.dp</code> inline — Jetcaster formalizes it because a value change in one place must propagate simultaneously to three targets.</p>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── PART 2: COMPONENTS ── -->
+  <section id="jetnews-components">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div>
+        <h2>Component Library</h2>
+        <p>How each app wraps (or doesn't wrap) Compose primitives into themed, reusable components.</p>
+      </div>
+    </div>
+
+    <h3>2.1 JetNews — Thin Layer (2 wrappers)</h3>
+
+    <div class="file-list">
+      <div class="file-list-title">components/</div>
+      <ul>
+        <li>AppNavRail.kt — NavigationRail with Jetnews-specific items</li>
+        <li>JetnewsSnackbarHost.kt — SnackbarHost with branded positioning</li>
+      </ul>
+    </div>
+
+    <div class="info-box purpose">
+      <div class="info-box-title">Pattern</div>
+      <p>Import M3 <code>Card</code>, <code>TopAppBar</code>, <code>Button</code> directly. Pass <code>MaterialTheme.colorScheme.*</code> as parameters when needed. No custom component class. Use this when Material 3 components fit your design exactly — zero abstraction overhead.</p>
+    </div>
+  </section>
+
+  <section id="jetchat-components">
+    <h3>2.2 Jetchat — Scaffolding Layer (6 wrappers)</h3>
+
+    <div class="file-list">
+      <div class="file-list-title">components/</div>
+      <ul>
+        <li>JetchatAppBar.kt — CenterAlignedTopAppBar with chat-specific actions</li>
+        <li>JetchatDrawer.kt — ModalNavigationDrawer with channel list</li>
+        <li>JetchatScaffold.kt — Scaffold wrapper with chat layout logic</li>
+        <li>JetchatIcon.kt — Icon with branded tinting</li>
+        <li>AnimatingFabContent.kt — FAB with text-expansion animation</li>
+        <li>BaseLineHeightModifier.kt — Custom Modifier for text baseline alignment</li>
+      </ul>
+    </div>
+
+    <div class="info-box purpose">
+      <div class="info-box-title">Pattern</div>
+      <p>Wrap M3 scaffold components to encapsulate layout decisions. The app bar knows about chat-specific actions; the scaffold knows about chat-specific slot positions. Good for apps where M3 structure is right but slot content is custom.</p>
+    </div>
+  </section>
+
+  <section id="jetsnack-components">
+    <h3>2.3 Jetsnack — Full Custom Library (11 wrappers)</h3>
+    <p>Every M3 component Jetsnack uses is <strong>wrapped and re-skinned</strong> to use <code>JetsnackTheme.colors</code> instead of <code>MaterialTheme.colorScheme</code>.</p>
+
+    <div class="file-list">
+      <div class="file-list-title">components/</div>
+      <ul>
+        <li>Button.kt — JetsnackButton (gradient background, pill shape)</li>
+        <li>Card.kt — SnackCollection card layout</li>
+        <li>Divider.kt — JetsnackDivider (uses JetsnackTheme.colors.uiBorder)</li>
+        <li>Gradient.kt — Modifier extensions: diagonalGradientTint, offsetGradientBackground, fadeInDiagonalGradientBorder</li>
+        <li>GradientTintedIconButton.kt — Icon button with diagonal gradient tint</li>
+        <li>Grid.kt — Custom staggered grid layout</li>
+        <li>QuantitySelector.kt — +/- quantity control</li>
+        <li>Scaffold.kt — JetsnackScaffold (custom bottom bar slot)</li>
+        <li>Snackbar.kt — JetsnackSnackbar (branded notification)</li>
+        <li>Snacks.kt — SnackItem, SnackCollection composables</li>
+        <li>Surface.kt — JetsnackSurface (consumes JetsnackTheme colors)</li>
+      </ul>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — JetsnackButton (gradient — impossible with M3 Button)</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">JetsnackButton</span>(
+    onClick: () -> Unit,
+    backgroundGradient: <span class="cls">List</span>&lt;<span class="cls">Color</span>&gt; = <span class="cls">JetsnackTheme</span>.colors.interactivePrimary,
+    contentColor: <span class="cls">Color</span>            = <span class="cls">JetsnackTheme</span>.colors.textInteractive,
+    content: <span class="ann">@Composable</span> <span class="cls">RowScope</span>.() -> Unit,
+) {
+    <span class="fn">JetsnackSurface</span>(
+        modifier = <span class="cls">Modifier</span>
+            .<span class="fn">background</span>(<span class="cls">Brush</span>.<span class="fn">horizontalGradient</span>(colors = backgroundGradient))
+            .<span class="fn">clip</span>(ButtonShape),   <span class="cmt">// ButtonShape = RoundedCornerShape(50%)</span>
+    ) { <span class="cmt">/* ... */</span> }
+}</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — Gradient.kt Modifier library</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="cmt">// Diagonal gradient tint over any content:</span>
+<span class="cls">Modifier</span>.<span class="fn">diagonalGradientTint</span>(colors = <span class="cls">JetsnackTheme</span>.colors.tornado1, blendMode = <span class="cls">BlendMode</span>.Darken)
+
+<span class="cmt">// Scroll-aware tiling gradient:</span>
+<span class="cls">Modifier</span>.<span class="fn">offsetGradientBackground</span>(colors = gradient, width = { size.width }, offset = { scroll.<span class="fn">toFloat</span>() })
+
+<span class="cmt">// Animated gradient border (fades in/out with selection state):</span>
+<span class="cls">Modifier</span>.<span class="fn">fadeInDiagonalGradientBorder</span>(showBorder = selected, colors = gradient, shape = shape)</code></pre>
+    </div>
+  </section>
+
+  <section id="jetcaster-components">
+    <h3>2.4 Jetcaster — Shared Multi-Platform Components</h3>
+    <p><code>core/designsystem/component/</code> contains components shared across <strong>mobile, TV, and Wear</strong> — a single source of truth for image loading, placeholders and HTML rendering.</p>
+
+    <div class="file-list">
+      <div class="file-list-title">core/designsystem/component/</div>
+      <ul>
+        <li>PodcastImage.kt — Coil async image with loading/error states + shimmer placeholder</li>
+        <li>ImageBackground.kt — Full-bleed background image with gradient overlay</li>
+        <li>HtmlTextContainer.kt — Renders HTML episode descriptions as styled Compose text</li>
+        <li>thumbnailPlaceholder.kt — Animated shimmer brush for loading placeholders</li>
+      </ul>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — PodcastImage (well-structured shared component)</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">PodcastImage</span>(
+    podcastImageUrl: <span class="cls">String</span>,
+    contentDescription: <span class="cls">String</span>?,
+    modifier: <span class="cls">Modifier</span> = <span class="cls">Modifier</span>,
+    placeholderBrush: <span class="cls">Brush</span> = <span class="fn">thumbnailPlaceholderDefaultBrush</span>(),
+) {
+    <span class="cmt">// Preview mode: solid color box (no network call)</span>
+    <span class="kw">if</span> (<span class="cls">LocalInspectionMode</span>.current) {
+        <span class="fn">Box</span>(modifier = modifier.<span class="fn">background</span>(<span class="cls">MaterialTheme</span>.colorScheme.primary))
+        <span class="kw">return</span>
+    }
+    <span class="cmt">// Runtime: Coil async load → loading/error → final image</span>
+}</code></pre>
+    </div>
+  </section>
+
+  <section id="reply-components">
+    <h3>2.5 Reply — M3 Components with Adaptive Slots</h3>
+    <p>Reply uses M3 components directly, but its real design system work is in <strong>adaptive navigation</strong> — the same content slot renders a different navigation component depending on screen size.</p>
+
+    <div class="file-list">
+      <div class="file-list-title">ui/components/</div>
+      <ul>
+        <li>ReplyAppBars.kt — TopAppBar with search, profile actions</li>
+        <li>ReplyEmailListItem.kt — Email card (surface + typography tokens)</li>
+        <li>ReplyEmailThreadItem.kt — Thread view card</li>
+        <li>ReplyProfileImage.kt — Avatar composable</li>
+      </ul>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Screen Size</th><th>Navigation Component</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Compact (phone)</td><td><code>BottomNavigationBar</code></td></tr>
+          <tr><td>Medium (small tablet)</td><td><code>NavigationRail</code></td></tr>
+          <tr><td>Expanded (large tablet / desktop)</td><td><code>PermanentNavigationDrawer</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── PART 3: PATTERNS ── -->
+  <section id="patterns">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div>
+        <h2>Token Access Patterns</h2>
+        <p>How components <em>consume</em> tokens determines how easy the system is to theme and test.</p>
+      </div>
+    </div>
+
+    <div class="pattern-tabs">
+      <button class="tab-btn active" data-tab="pattern-a">Pattern A</button>
+      <button class="tab-btn" data-tab="pattern-b">Pattern B</button>
+      <button class="tab-btn" data-tab="pattern-c">Pattern C</button>
+      <button class="tab-btn" data-tab="pattern-d">Pattern D</button>
+    </div>
+
+    <div id="pattern-a" class="tab-panel active">
+      <div class="pattern-header">
+        <div class="pattern-badge badge-beginner">Simplest</div>
+        <h3 style="margin:0 0 4px">MaterialTheme Direct</h3>
+        <div style="color:var(--text-muted);font-size:13px">Used by: JetNews, Reply, Jetchat</div>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">Kotlin</span>
+          <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+        </div>
+        <pre><code><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">ArticleCard</span>() {
+    <span class="fn">Card</span>(
+        colors = <span class="cls">CardDefaults</span>.<span class="fn">cardColors</span>(
+            containerColor = <span class="cls">MaterialTheme</span>.colorScheme.surfaceVariant,
+        )
+    ) {
+        <span class="fn">Text</span>(
+            style = <span class="cls">MaterialTheme</span>.typography.bodyMedium,
+            color = <span class="cls">MaterialTheme</span>.colorScheme.onSurfaceVariant,
+        )
+    }
+}</code></pre>
+      </div>
+      <div class="pro-con-row">
+        <div class="pro-card">
+          <div class="pro-con-label">✅ Pros</div>
+          <ul><li>Zero extra code</li><li>Works with dynamic color automatically</li><li>Works with system dark mode</li></ul>
+        </div>
+        <div class="con-card">
+          <div class="pro-con-label">❌ Cons</div>
+          <ul><li>Can't add tokens M3 doesn't have</li><li>No <code>sleepDeep</code> color slot in M3</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="pattern-b" class="tab-panel">
+      <div class="pattern-header">
+        <div class="pattern-badge badge-intermediate">Extended M3</div>
+        <h3 style="margin:0 0 4px">CompositionLocal Extra Layer</h3>
+        <div style="color:var(--text-muted);font-size:13px">Used by: JetLagged</div>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">Kotlin</span>
+          <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+        </div>
+        <pre><code><span class="cmt">// 1. Define extra tokens</span>
+<span class="kw">data class</span> <span class="cls">JetLaggedExtraColors</span>(<span class="kw">val</span> sleepDeep: <span class="cls">Color</span> = <span class="fn">Color</span>(<span class="num">0xFFFC424A</span>))
+
+<span class="cmt">// 2. Provide at theme root</span>
+<span class="kw">val</span> <span class="cls">LocalExtraColors</span> = <span class="fn">staticCompositionLocalOf</span> { <span class="cls">JetLaggedExtraColors</span>() }
+
+<span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">JetLaggedTheme</span>(content: <span class="ann">@Composable</span> () -> Unit) {
+    <span class="fn">CompositionLocalProvider</span>(<span class="cls">LocalExtraColors</span> provides <span class="cls">JetLaggedExtraColors</span>()) {
+        <span class="fn">MaterialTheme</span>(content = content)
+    }
+}
+
+<span class="cmt">// 3. Consume anywhere:</span>
+<span class="kw">val</span> colors = <span class="cls">LocalExtraColors</span>.current
+<span class="fn">Box</span>(modifier = <span class="cls">Modifier</span>.<span class="fn">background</span>(colors.sleepDeep))</code></pre>
+      </div>
+      <div class="pro-con-row">
+        <div class="pro-card">
+          <div class="pro-con-label">✅ Pros</div>
+          <ul><li>Extends M3 cleanly without replacing it</li><li>Easy to add domain-specific tokens</li><li>Material You still works</li></ul>
+        </div>
+        <div class="con-card">
+          <div class="pro-con-label">❌ Cons</div>
+          <ul><li>Must remember to read <code>LocalExtraColors.current</code></li><li>Easy to forget in deeply nested composables</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="pattern-c" class="tab-panel">
+      <div class="pattern-header">
+        <div class="pattern-badge badge-advanced">Full Custom</div>
+        <h3 style="margin:0 0 4px">Custom Theme Object</h3>
+        <div style="color:var(--text-muted);font-size:13px">Used by: Jetsnack</div>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">Kotlin</span>
+          <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+        </div>
+        <pre><code><span class="cmt">// Theme object — type-safe access to all tokens:</span>
+<span class="kw">object</span> <span class="cls">JetsnackTheme</span> {
+    <span class="kw">val</span> colors: <span class="cls">JetsnackColors</span>
+        <span class="ann">@Composable</span> <span class="kw">get</span>() = <span class="cls">LocalJetsnackColors</span>.current
+    <span class="kw">val</span> typography: <span class="cls">Typography</span>
+        <span class="ann">@Composable</span> <span class="kw">get</span>() = <span class="cls">MaterialTheme</span>.typography
+}
+
+<span class="cmt">// Components always use JetsnackTheme, never MaterialTheme.colorScheme:</span>
+<span class="kw">val</span> gradient = <span class="cls">JetsnackTheme</span>.colors.gradient6_1
+<span class="kw">val</span> brand    = <span class="cls">JetsnackTheme</span>.colors.brand
+
+<span class="cmt">// debugColors() — magenta sentinel catches M3 leakage in dev builds:</span>
+<span class="kw">fun</span> <span class="fn">debugColors</span>() = <span class="cls">JetsnackColors</span>(brand = <span class="cls">Color</span>.Magenta, ...)</code></pre>
+      </div>
+      <div class="pro-con-row">
+        <div class="pro-card">
+          <div class="pro-con-label">✅ Pros</div>
+          <ul><li>Type-safe — all tokens discoverable via IDE autocomplete</li><li><code>debugColors()</code> enforces no M3 leakage</li><li>Complete design system isolation</li></ul>
+        </div>
+        <div class="con-card">
+          <div class="pro-con-label">❌ Cons</div>
+          <ul><li>More boilerplate upfront</li><li>Cannot use Material You dynamic color</li><li>Must re-implement everything M3 provides for free</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="pattern-d" class="tab-panel">
+      <div class="pattern-header">
+        <div class="pattern-badge badge-advanced">Multi-platform</div>
+        <h3 style="margin:0 0 4px">Shared Gradle Module</h3>
+        <div style="color:var(--text-muted);font-size:13px">Used by: Jetcaster</div>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">Project structure</span>
+          <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+        </div>
+        <pre><code>Jetcaster/
+├── core/
+│   └── designsystem/         <span class="cmt">← Android library module</span>
+│       ├── theme/
+│       │   ├── Color.kt      <span class="cmt">← single source of truth</span>
+│       │   ├── Type.kt
+│       │   ├── Shape.kt
+│       │   └── Keylines.kt
+│       └── component/
+│           ├── PodcastImage.kt
+│           └── ...
+├── mobile/                   <span class="cmt">← depends on :core:designsystem</span>
+├── tv-app/                   <span class="cmt">← depends on :core:designsystem</span>
+└── wear/                     <span class="cmt">← depends on :core:designsystem</span></code></pre>
+      </div>
+      <div class="pro-con-row">
+        <div class="pro-card">
+          <div class="pro-con-label">✅ Pros</div>
+          <ul><li>Single source of truth for all tokens</li><li>Color change in <code>Color.kt</code> propagates to mobile, TV, Wear simultaneously</li><li>Shared components reduce duplication</li></ul>
+        </div>
+        <div class="con-card">
+          <div class="pro-con-label">❌ Cons</div>
+          <ul><li>Requires multi-module Gradle setup</li><li>Overkill for single-target apps</li><li>Higher initial project complexity</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── DECISION GUIDE ── -->
+  <section id="decision">
+    <div class="section-header">
+      <div class="section-number">🧭</div>
+      <div>
+        <h2>Decision Guide</h2>
+        <p>Which pattern to pick for your app.</p>
+      </div>
+    </div>
+
+    <div class="ds-flowchart">
+      <div class="flow-node flow-start">START</div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-question">Does your app target multiple form factors (TV, Wear)?</div>
+      <div class="flow-row">
+        <div class="flow-branch">
+          <div class="flow-answer">YES</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-result" style="border-color:var(--accent)">
+            <strong>Pattern D</strong><br/>Shared Gradle Module<br/><span class="flow-example">→ Jetcaster</span>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-answer">NO → continue ↓</div>
+        </div>
+      </div>
+
+      <div class="flow-question">Does your brand diverge from Material Design?</div>
+      <div class="flow-row flow-row-3">
+        <div class="flow-branch">
+          <div class="flow-answer">Completely custom</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-result" style="border-color:var(--red)">
+            <strong>Pattern C</strong><br/>Custom Theme Object<br/><span class="flow-example">→ Jetsnack</span>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-answer">Extends M3</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-result" style="border-color:var(--yellow)">
+            <strong>Pattern B</strong><br/>CompositionLocal<br/><span class="flow-example">→ JetLagged</span>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-answer">Follows M3 fully</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-result" style="border-color:var(--green)">
+            <strong>Pattern A</strong><br/>MaterialTheme Direct<br/><span class="flow-example">→ JetNews / Reply</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-addons">
+        <div class="flow-addon">➕ Need contrast tiers (accessibility)?<br/><strong>Add Reply's <code>UiModeManager.contrast</code></strong></div>
+        <div class="flow-addon">➕ Need Material You (wallpaper colors)?<br/><strong>Add <code>dynamicColorScheme()</code> like Jetchat / Reply</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── LESSONS ── -->
+  <section id="lessons">
+    <div class="section-header">
+      <div class="section-number">📚</div>
+      <div>
+        <h2>What Each App Teaches</h2>
+        <p>The single most transferable lesson and the most copy-worthy code from each sample.</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>App</th>
+            <th>Primary Lesson</th>
+            <th>What to Copy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>JetNews</td>
+            <td>M3 color roles + tonal elevation</td>
+            <td><code>lightColorScheme()</code> / <code>darkColorScheme()</code> setup, <code>Typography</code> with <code>LineBreak</code></td>
+          </tr>
+          <tr>
+            <td>Jetchat</td>
+            <td>Downloadable fonts + widget theming</td>
+            <td><code>GoogleFont.Provider</code>, <code>GlanceTheme</code> for home screen widgets</td>
+          </tr>
+          <tr>
+            <td>Jetsnack</td>
+            <td>Full custom design system</td>
+            <td><code>JetsnackColors</code> data class, <code>debugColors()</code> enforcement, <code>Gradient.kt</code> Modifier extensions</td>
+          </tr>
+          <tr>
+            <td>Jetcaster</td>
+            <td>Multi-module design system + variable fonts</td>
+            <td><code>core/designsystem</code> module structure, <code>RobotoFlex</code> variable font, <code>Keyline1</code> spacing token</td>
+          </tr>
+          <tr>
+            <td>Reply</td>
+            <td>Contrast accessibility + adaptive navigation</td>
+            <td><code>UiModeManager.contrast</code> tier switching, <code>WindowSizeClass</code>-driven nav</td>
+          </tr>
+          <tr>
+            <td>JetLagged</td>
+            <td>Named semantic styles + domain tokens</td>
+            <td><code>CompositionLocalProvider</code> for extra colors, <code>TitleBarStyle</code> named typography pattern</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── ANTI-PATTERNS ── -->
+  <section id="antipatterns">
+    <div class="section-header">
+      <div class="section-number">⚠️</div>
+      <div>
+        <h2>Anti-Patterns to Avoid</h2>
+        <p>Six concrete mistakes and how to fix them.</p>
+      </div>
+    </div>
+
+    <h3>1. Hardcoding colors inline</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="cmt">// ❌ BAD — hardcoded, won't respond to dark mode</span>
+<span class="fn">Text</span>(color = <span class="fn">Color</span>(<span class="num">0xFF333333</span>))
+
+<span class="cmt">// ✅ GOOD — responds to theme automatically</span>
+<span class="fn">Text</span>(color = <span class="cls">MaterialTheme</span>.colorScheme.onSurface)</code></pre>
+    </div>
+
+    <h3>2. Using Color.Unspecified as a sentinel</h3>
+    <div class="info-box warning">
+      <div class="info-box-title">Jetsnack's Solution</div>
+      <p>Jetsnack uses <code>debugColors()</code> with <code>Color.Magenta</code> — any composable that doesn't explicitly set a color gets an obvious magenta tint during development, making unthemed components immediately visible.</p>
+    </div>
+
+    <h3>3. Mixing M3 colors with your custom system</h3>
+    <div class="info-box warning">
+      <div class="info-box-title">Rule</div>
+      <p>Once you've adopted a custom system like Jetsnack's, never mix <code>MaterialTheme.colorScheme.primary</code> with <code>JetsnackTheme.colors.brand</code>. Pick one system and enforce it — <code>debugColors()</code> is the enforcement mechanism.</p>
+    </div>
+
+    <h3>4. Ignoring the <code>onX</code> contract</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="cmt">// ❌ BAD — onSurface has no guaranteed contrast against primary</span>
+<span class="fn">Box</span>(modifier = <span class="cls">Modifier</span>.<span class="fn">background</span>(<span class="cls">MaterialTheme</span>.colorScheme.primary)) {
+    <span class="fn">Text</span>(color = <span class="cls">MaterialTheme</span>.colorScheme.onSurface)
+}
+
+<span class="cmt">// ✅ GOOD — onPrimary is guaranteed contrast against primary</span>
+<span class="fn">Box</span>(modifier = <span class="cls">Modifier</span>.<span class="fn">background</span>(<span class="cls">MaterialTheme</span>.colorScheme.primary)) {
+    <span class="fn">Text</span>(color = <span class="cls">MaterialTheme</span>.colorScheme.onPrimary)
+}</code></pre>
+    </div>
+
+    <h3>5. Skipping LocalInspectionMode in shared components</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — correct pattern from PodcastImage.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><code><span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">PodcastImage</span>(...) {
+    <span class="cmt">// Short-circuit in Compose Preview — no network call, no crash</span>
+    <span class="kw">if</span> (<span class="cls">LocalInspectionMode</span>.current) {
+        <span class="fn">Box</span>(modifier = modifier.<span class="fn">background</span>(<span class="cls">MaterialTheme</span>.colorScheme.primary))
+        <span class="kw">return</span>
+    }
+    <span class="cmt">// Real image loading only at runtime</span>
+}</code></pre>
+    </div>
+
+    <h3>6. Defining spacing as raw dp everywhere</h3>
+    <div class="info-box warning">
+      <div class="info-box-title">Rule</div>
+      <p>If the same spacing value is referenced across more than one module or form factor, name it (<code>val Keyline1 = 16.dp</code>). A find-and-replace across multiple targets is error-prone; a named token is a single change.</p>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── SUMMARY ── -->
+  <section id="summary">
+    <div class="section-header">
+      <div class="section-number">✅</div>
+      <div>
+        <h2>Summary</h2>
+        <p>The spectrum from zero abstraction to full custom — and how to pick your position.</p>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-icon">🎯</div>
+        <div class="summary-title">Brand distance from Material</div>
+        <div class="summary-body">Close → stay on M3 (Pattern A). Diverged → wrap or replace (Pattern C).</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon">📱</div>
+        <div class="summary-title">Number of targets</div>
+        <div class="summary-body">One app → colocate tokens in <code>ui/theme</code>. Multiple targets → extract to a Gradle module (Pattern D).</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon">🔑</div>
+        <div class="summary-title">Extra tokens needed?</div>
+        <div class="summary-body">None → <code>MaterialTheme</code> is enough. Domain-specific → add <code>CompositionLocal</code> (Pattern B).</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon">♿</div>
+        <div class="summary-title">Accessibility tiers</div>
+        <div class="summary-body">Reply's <code>UiModeManager.contrast</code> detection is the reference implementation for contrast-tier support.</div>
+      </div>
+    </div>
+
+    <div class="info-box purpose" style="margin-top:24px">
+      <div class="info-box-title">Starting Point</div>
+      <p><strong>Start with Pattern A</strong> and add complexity only when you hit a concrete wall. Most production apps that follow Material guidelines never need to go beyond Pattern B.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Android Compose Samples Learning Guide · Phase 2 of 6 ·
+      <a href="theming-styles-guide.html">← Previous: Theming</a> &nbsp;·&nbsp;
+      <a href="architecture-state.html">Next: Architecture →</a>
+    </p>
+  </footer>
+
+</main>
+
+<script src="scripts/main.js"></script>
+<script src="scripts/design-system.js"></script>
+</body>
+</html>

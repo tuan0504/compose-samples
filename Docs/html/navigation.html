@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phase 4 — Navigation | Android Compose Samples</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+
+<aside>
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-icon">🧭</div>
+      <div>
+        <h2>Android Compose</h2>
+        <p>Learning Guide</p>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-section-label">Phases</div>
+      <a class="nav-item" href="theming-styles-guide.html">
+        <span>🎨</span> Phase 2 — Theming
+      </a>
+      <a class="nav-item" href="design-system.html">
+        <span>🧩</span> Phase 2 — Design System
+      </a>
+      <a class="nav-item" href="architecture-state.html">
+        <span>🏗</span> Phase 3 — Architecture
+      </a>
+      <a class="nav-item active" href="navigation.html">
+        <span>🧭</span> Phase 4 — Navigation
+      </a>
+      <a class="nav-item" href="reusable-components.html">
+        <span>♻️</span> Phase 5 — Components
+      </a>
+      <a class="nav-item" href="testing-performance.html">
+        <span>🧪</span> Phase 6 — Testing
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">On This Page</div>
+      <a class="nav-item" href="#overview">
+        <span>📊</span> Overview
+      </a>
+      <a class="nav-item" href="#navhost">
+        <span>🗺</span> Standard NavHost
+      </a>
+      <a class="nav-item" href="#appstate">
+        <span>🔒</span> AppState Pattern
+      </a>
+      <a class="nav-item" href="#adaptive">
+        <span>📱</span> Adaptive Navigation
+      </a>
+      <a class="nav-item" href="#nav3">
+        <span>🧪</span> Navigation 3
+      </a>
+      <a class="nav-item" href="#rules">
+        <span>📏</span> Key Rules
+      </a>
+      <a class="nav-item" href="#summary">
+        <span>✅</span> Summary
+      </a>
+    </div>
+  </nav>
+</aside>
+
+<main>
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">📖 Phase 4 · Day 3</div>
+    <h1>Navigation</h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="dot"></span> How do screens connect?</div>
+      <div class="hero-meta-item">6 apps compared</div>
+      <div class="hero-meta-item">4 patterns</div>
+      <div class="hero-meta-item"><span class="badge badge-intermediate">Intermediate</span></div>
+    </div>
+  </div>
+
+  <!-- Overview -->
+  <section id="overview">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div>
+        <h2>Overview</h2>
+        <p>Navigation in Compose covers the full spectrum — from no navigation (single screen) to adaptive navigation that changes its component based on window size.</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>App</th>
+            <th>Navigation approach</th>
+            <th>Screens</th>
+            <th>Adaptive</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>JetLagged</td>
+            <td>None — single screen</td>
+            <td>1</td>
+            <td><span class="no-tag">No</span></td>
+          </tr>
+          <tr>
+            <td>Jetchat</td>
+            <td>Standard <code>NavHost</code> + Fragment interop</td>
+            <td>2</td>
+            <td><span class="no-tag">No</span></td>
+          </tr>
+          <tr>
+            <td>Jetsnack</td>
+            <td><code>NavHost</code> + custom <code>JetsnackNavController</code> wrapper</td>
+            <td>3 (home tabs + detail)</td>
+            <td><span class="no-tag">No</span></td>
+          </tr>
+          <tr>
+            <td>Reply</td>
+            <td><code>NavHost</code> + type-safe routes + <code>NavigationSuiteScaffold</code></td>
+            <td>4</td>
+            <td><span class="yes-tag">Yes</span></td>
+          </tr>
+          <tr>
+            <td>JetNews</td>
+            <td>Custom <code>NavigationState</code> (Navigation 3 library)</td>
+            <td>2 + detail pane</td>
+            <td><span class="yes-tag">Yes (drawer/rail)</span></td>
+          </tr>
+          <tr>
+            <td>Jetcaster</td>
+            <td><code>NavHost</code> + <code>AppState</code> class per form factor</td>
+            <td>Mobile: 3, TV: 6, Wear: custom</td>
+            <td><span class="yes-tag">Yes (multi form factor)</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- NavHost Pattern -->
+  <section id="navhost">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div>
+        <h2>Standard NavHost Pattern (Reply)</h2>
+        <p>Reply uses <strong>type-safe routes</strong> with <code>@Serializable</code> data objects — no string typos. Navigation is encapsulated in a <code>ReplyNavigationActions</code> class — composables don't touch <code>NavController</code> directly.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — Type-Safe Routes</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// ReplyNavigationActions.kt</span>
+<span class="kw">sealed interface</span> <span class="cls">Route</span> {
+    <span class="ann">@Serializable</span> <span class="kw">data object</span> <span class="cls">Inbox</span>          : <span class="cls">Route</span>
+    <span class="ann">@Serializable</span> <span class="kw">data object</span> <span class="cls">Articles</span>       : <span class="cls">Route</span>
+    <span class="ann">@Serializable</span> <span class="kw">data object</span> <span class="cls">DirectMessages</span> : <span class="cls">Route</span>
+    <span class="ann">@Serializable</span> <span class="kw">data object</span> <span class="cls">Groups</span>         : <span class="cls">Route</span>
+}</pre>
+    </div>
+
+    <h3>The 3-Flag Navigate Block</h3>
+    <p>Three flags used together on every bottom-nav tap. Missing any one creates bugs.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — Bottom-Nav Navigation</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="kw">fun</span> <span class="fn">navigateTo</span>(destination: <span class="cls">ReplyTopLevelDestination</span>) {
+    navController.<span class="fn">navigate</span>(destination.route) {
+        <span class="fn">popUpTo</span>(navController.graph.<span class="fn">findStartDestination</span>().id) {
+            saveState = <span class="kw">true</span>   <span class="cmt">// preserve scroll position / form state</span>
+        }
+        launchSingleTop = <span class="kw">true</span>  <span class="cmt">// no duplicate copies of same screen</span>
+        restoreState = <span class="kw">true</span>      <span class="cmt">// reload the saved state on re-selection</span>
+    }
+}</pre>
+    </div>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>popUpTo { saveState = true }</h4>
+        <p>Pop back to start destination, saving the popped screens' state so scroll position and form values survive.</p>
+      </div>
+      <div class="concept-card">
+        <h4>launchSingleTop = true</h4>
+        <p>Don't create a second copy if already on that screen — tapping the current tab again is a no-op.</p>
+      </div>
+      <div class="concept-card">
+        <h4>restoreState = true</h4>
+        <p>Reload the saved state when navigating back to a previously visited tab.</p>
+      </div>
+      <div class="concept-card">
+        <h4>NavHost setup</h4>
+        <p>Declare destinations using <code>composable&lt;Route.Inbox&gt;</code> — compile-time safety, no string matching.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- AppState Pattern -->
+  <section id="appstate">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div>
+        <h2>AppState Class Pattern (Jetcaster / Jetsnack)</h2>
+        <p>Both apps wrap <code>NavHostController</code> inside their own <code>@Stable</code> class so navigation logic can be tested independently from composables.</p>
+      </div>
+    </div>
+
+    <h3>lifecycleIsResumed() — De-duplication guard</h3>
+    <p>Without this check, tapping a list item quickly can fire two navigation events before the first completes, pushing the same screen twice onto the back stack.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — Jetcaster AppState</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="kw">private fun</span> <span class="cls">NavBackStackEntry</span>.<span class="fn">lifecycleIsResumed</span>() =
+    this.lifecycle.currentState == <span class="cls">Lifecycle</span>.State.RESUMED
+
+<span class="kw">class</span> <span class="cls">JetcasterAppState</span>(<span class="kw">val</span> navController: <span class="cls">NavHostController</span>, <span class="kw">private val</span> context: <span class="cls">Context</span>) {
+    <span class="kw">var</span> isOnline <span class="kw">by</span> <span class="fn">mutableStateOf</span>(<span class="fn">checkIfOnline</span>())
+        <span class="kw">private set</span>
+
+    <span class="kw">fun</span> <span class="fn">navigateToPlayer</span>(episodeUri: <span class="cls">String</span>, from: <span class="cls">NavBackStackEntry</span>) {
+        <span class="kw">if</span> (from.<span class="fn">lifecycleIsResumed</span>()) {
+            <span class="kw">val</span> encodedUri = <span class="cls">Uri</span>.<span class="fn">encode</span>(episodeUri)  <span class="cmt">// handle special chars in URI</span>
+            navController.<span class="fn">navigate</span>(<span class="cls">Screen</span>.Player.<span class="fn">createRoute</span>(encodedUri))
+        }
+    }
+
+    <span class="kw">fun</span> <span class="fn">navigateBack</span>() { navController.<span class="fn">popBackStack</span>() }
+}
+
+<span class="cmt">// remember pattern — stable across recompositions</span>
+<span class="ann">@Composable</span>
+<span class="kw">fun</span> <span class="fn">rememberJetcasterAppState</span>(navController: <span class="cls">NavHostController</span> = <span class="fn">rememberNavController</span>()) =
+    <span class="fn">remember</span>(navController) { <span class="cls">JetcasterAppState</span>(navController, <span class="cls">LocalContext</span>.current) }</pre>
+    </div>
+
+    <div class="info-box warning">
+      <div class="info-box-title">URI Encoding Rule</div>
+      <p>Always encode path arguments with <code>Uri.encode(uri)</code> before inserting into routes. Without it, any <code>/</code> or <code>?</code> in the value breaks the route pattern.</p>
+    </div>
+
+    <h3>Jetsnack — @Stable wrapper with bottom-tab management</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — JetsnackNavController.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="ann">@Stable</span>
+<span class="kw">class</span> <span class="cls">JetsnackNavController</span>(<span class="kw">val</span> navController: <span class="cls">NavHostController</span>) {
+
+    <span class="kw">fun</span> <span class="fn">navigateToBottomBarRoute</span>(route: <span class="cls">String</span>) {
+        <span class="kw">if</span> (route != navController.currentDestination?.route) {
+            navController.<span class="fn">navigate</span>(route) {
+                launchSingleTop = <span class="kw">true</span>
+                restoreState = <span class="kw">true</span>
+                <span class="fn">popUpTo</span>(<span class="fn">findStartDestination</span>(navController.graph).id) {
+                    saveState = <span class="kw">true</span>
+                }
+            }
+        }
+    }
+
+    <span class="kw">fun</span> <span class="fn">navigateToSnackDetail</span>(snackId: <span class="cls">Long</span>, origin: <span class="cls">String</span>, from: <span class="cls">NavBackStackEntry</span>) {
+        <span class="kw">if</span> (from.<span class="fn">lifecycleIsResumed</span>()) {
+            navController.<span class="fn">navigate</span>(<span class="str">"${MainDestinations.SNACK_DETAIL_ROUTE}/$snackId?origin=$origin"</span>)
+        }
+    }
+}</pre>
+    </div>
+
+    <p><code>@Stable</code> on the class tells Compose the wrapper is stable — composables that receive it as a parameter won't recompose unnecessarily.</p>
+  </section>
+
+  <hr />
+
+  <!-- Adaptive Navigation -->
+  <section id="adaptive">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div>
+        <h2>Adaptive Navigation (Reply)</h2>
+        <p>The same destinations render different navigation chrome depending on screen size, using <code>NavigationSuiteScaffold</code> from Material 3 Adaptive.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — ReplyApp.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="kw">private fun</span> <span class="cls">NavigationSuiteType</span>.<span class="fn">toReplyNavType</span>() = <span class="kw">when</span> (<span class="kw">this</span>) {
+    <span class="cls">NavigationSuiteType</span>.NavigationBar    -> <span class="cls">ReplyNavigationType</span>.BOTTOM_NAVIGATION
+    <span class="cls">NavigationSuiteType</span>.NavigationRail   -> <span class="cls">ReplyNavigationType</span>.NAVIGATION_RAIL
+    <span class="cls">NavigationSuiteType</span>.NavigationDrawer -> <span class="cls">ReplyNavigationType</span>.PERMANENT_NAVIGATION_DRAWER
+    <span class="kw">else</span>                                 -> <span class="cls">ReplyNavigationType</span>.BOTTOM_NAVIGATION
+}
+
+<span class="kw">val</span> contentType = <span class="kw">when</span> (windowSize.widthSizeClass) {
+    <span class="cls">WindowWidthSizeClass</span>.Compact  -> <span class="cls">ReplyContentType</span>.SINGLE_PANE
+    <span class="cls">WindowWidthSizeClass</span>.Medium   -> <span class="kw">if</span> (foldingDevicePosture != <span class="cls">DevicePosture</span>.NormalPosture)
+                                         <span class="cls">ReplyContentType</span>.DUAL_PANE
+                                     <span class="kw">else</span> <span class="cls">ReplyContentType</span>.SINGLE_PANE
+    <span class="cls">WindowWidthSizeClass</span>.Expanded -> <span class="cls">ReplyContentType</span>.DUAL_PANE
+    <span class="kw">else</span>                          -> <span class="cls">ReplyContentType</span>.SINGLE_PANE
+}</pre>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Window Size</th>
+            <th>Navigation Chrome</th>
+            <th>Content Layout</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Compact (phone)</td>
+            <td><code>BottomNavigationBar</code></td>
+            <td>Single pane</td>
+          </tr>
+          <tr>
+            <td>Medium (tablet portrait)</td>
+            <td><code>NavigationRail</code></td>
+            <td>Single or dual pane</td>
+          </tr>
+          <tr>
+            <td>Expanded (tablet landscape)</td>
+            <td><code>PermanentNavigationDrawer</code></td>
+            <td>Dual pane (list + detail always visible)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Navigation 3 -->
+  <section id="nav3">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <div>
+        <h2>Navigation 3 Library (JetNews — Experimental)</h2>
+        <p>JetNews uses the experimental <strong>Navigation 3</strong> library instead of <code>NavHost</code>. It manages a back-stack of <code>NavKey</code> objects rather than string routes.</p>
+      </div>
+    </div>
+
+    <div class="info-box warning">
+      <div class="info-box-title">Not Yet Stable</div>
+      <p>Navigation 3 is not yet stable. Jetsnack, Reply, and Jetcaster use the stable <code>NavHost</code> API which is the safe production choice today.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin — JetnewsApp.kt</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// No NavHost, no NavController</span>
+<span class="kw">val</span> navigationState = <span class="fn">rememberNavigationState</span>(
+    primaryTopLevelKey = HomeKey,
+    topLevelKeys = <span class="fn">setOf</span>(HomeKey, InterestsKey),
+    initialBackStack = initialBackStack,
+)
+
+<span class="kw">val</span> navigator = <span class="fn">remember</span>(navigationState) { <span class="cls">Navigator</span>(navigationState) }
+
+<span class="cmt">// Type-safe key navigation</span>
+navigator.<span class="fn">navigate</span>(navKey, <span class="cls">PopUpTo</span>(navKey))
+navigator.<span class="fn">goUp</span>()
+
+<span class="cmt">// Adaptive: rail on expanded, drawer on compact</span>
+<span class="cls">Row</span> {
+    <span class="kw">if</span> (isExpandedScreen) {
+        <span class="fn">AppNavRail</span>(
+            currentTopLevelKey = navigationState.topLevelKey,
+            navigate = { navKey -> navigator.<span class="fn">navigate</span>(navKey) },
+        )
+    }
+    <span class="fn">JetnewsNavDisplay</span>(navigationState = navigationState, navigator = navigator)
+}</pre>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Key Rules -->
+  <section id="rules">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <div>
+        <h2>Key Rules to Follow</h2>
+      </div>
+    </div>
+
+    <h3>1. Never put NavController in ViewModel</h3>
+    <p><code>NavController</code> is a UI concern. Putting it in a ViewModel creates lifecycle issues and makes testing harder. Pass navigation callbacks as lambdas from the composable layer.</p>
+
+    <h3>2. Always guard rapid navigation events</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// ❌ BAD — double-tap pushes screen twice</span>
+onClick = { navController.<span class="fn">navigate</span>(route) }
+
+<span class="cmt">// ✅ GOOD — check lifecycle state before navigating</span>
+onClick = { <span class="kw">if</span> (backStackEntry.<span class="fn">lifecycleIsResumed</span>()) navController.<span class="fn">navigate</span>(route) }</pre>
+    </div>
+
+    <h3>3. Use the three bottom-nav flags together</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre>navController.<span class="fn">navigate</span>(route) {
+    <span class="fn">popUpTo</span>(startDestination) { saveState = <span class="kw">true</span> }
+    launchSingleTop = <span class="kw">true</span>
+    restoreState = <span class="kw">true</span>
+}</pre>
+    </div>
+
+    <h3>4. Use type-safe routes for new code</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// ❌ String routes — typos caught only at runtime</span>
+navController.<span class="fn">navigate</span>(<span class="str">"home"</span>)
+
+<span class="cmt">// ✅ Type-safe — caught at compile time</span>
+<span class="ann">@Serializable</span> <span class="kw">data object</span> <span class="cls">Home</span> : <span class="cls">Route</span>
+navController.<span class="fn">navigate</span>(<span class="cls">Home</span>)</pre>
+    </div>
+
+    <h3>5. Encode URIs for path arguments</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Kotlin</span>
+        <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      </div>
+      <pre><span class="cmt">// ❌ Breaks if podcastUri contains "/" or "?"</span>
+navController.<span class="fn">navigate</span>(<span class="str">"podcast/$podcastUri"</span>)
+
+<span class="cmt">// ✅ Always encode</span>
+navController.<span class="fn">navigate</span>(<span class="str">"podcast/${Uri.encode(podcastUri)}"</span>)</pre>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Summary -->
+  <section id="summary">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <div>
+        <h2>Comparison &amp; Decision Guide</h2>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>JetNews</th>
+            <th>Jetsnack</th>
+            <th>Jetcaster</th>
+            <th>Reply</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Library</td>
+            <td>Navigation 3 (experimental)</td>
+            <td>NavHost (stable)</td>
+            <td>NavHost (stable)</td>
+            <td>NavHost (stable)</td>
+          </tr>
+          <tr>
+            <td>Route type</td>
+            <td><code>NavKey</code> objects</td>
+            <td>String constants</td>
+            <td><code>sealed class Screen</code></td>
+            <td><code>@Serializable</code> data objects</td>
+          </tr>
+          <tr>
+            <td>Controller wrapper</td>
+            <td><code>Navigator</code> class</td>
+            <td><code>JetsnackNavController</code></td>
+            <td><code>JetcasterAppState</code></td>
+            <td><code>ReplyNavigationActions</code></td>
+          </tr>
+          <tr>
+            <td>De-duplication</td>
+            <td><code>PopUpTo</code></td>
+            <td><code>lifecycleIsResumed()</code></td>
+            <td><code>lifecycleIsResumed()</code></td>
+            <td><code>launchSingleTop</code></td>
+          </tr>
+          <tr>
+            <td>Adaptive nav</td>
+            <td>Rail vs Drawer</td>
+            <td><span class="no-tag">None</span></td>
+            <td>WindowSizeClass (TV)</td>
+            <td><code>NavigationSuiteScaffold</code></td>
+          </tr>
+          <tr>
+            <td>Deep links</td>
+            <td>Custom matcher</td>
+            <td><span class="no-tag">None</span></td>
+            <td><span class="no-tag">None</span></td>
+            <td><span class="no-tag">None</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flowchart">
+      <div><span class="q">Single screen app?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">No navigation needed</span> <span class="desc">(JetLagged)</span></div>
+      <br/>
+      <div><span class="q">Standard multi-screen, no adaptive?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">NavHost + @Serializable routes + NavigationActions class</span></div>
+      <br/>
+      <div><span class="q">Need bottom-tab navigation with state preservation?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">3-flag pattern</span> <span class="desc">popUpTo + launchSingleTop + restoreState</span></div>
+      <br/>
+      <div><span class="q">Navigation events can fire twice (fast taps on lists)?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">lifecycleIsResumed() guard</span> <span class="desc">on every navigateTo call</span></div>
+      <br/>
+      <div><span class="q">Adaptive layout (phone + tablet + foldable)?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">WindowSizeClass → NavigationSuiteScaffold</span> <span class="desc">(Reply pattern)</span></div>
+      <br/>
+      <div><span class="q">Multiple form factors (mobile + TV + Wear)?</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ans">YES →</span> <span class="style-ref">Separate NavHost per form factor, shared AppState class</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Android Compose Samples Learning Guide · Phase 4 of 6 ·
+      <a href="architecture-state.html">← Previous: Architecture</a> &nbsp;·&nbsp;
+      <a href="reusable-components.html">Next: Components →</a>
+    </p>
+  </footer>
+</main>
+
+<script src="scripts/main.js"></script>
+</body>
+</html>
