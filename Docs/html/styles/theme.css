@@ -1,0 +1,56 @@
+/* ── Android Compose — theme variables & project-specific styles ── */
+/* Load this BEFORE ../../docs/html/styles/main.css */
+
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --border: #2e3250;
+  --primary: #7c6af7;
+  --primary-light: #a89bf9;
+  --accent: #4fc3f7;
+  --green: #69f0ae;
+  --yellow: #ffd54f;
+  --red: #ff6b6b;
+  --text: #e2e4f0;
+  --text-muted: #8b90b5;
+  --code-bg: #12141f;
+  --code-border: #2a2e4a;
+  --sidebar-width: 280px;
+}
+
+/* ── Hero h1 — gradient text ── */
+.hero h1 {
+  background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── h3 with left-bar accent ── */
+h3 {
+  font-size: 16px; font-weight: 700; color: var(--text);
+  margin: 28px 0 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+h3::before {
+  content: '';
+  width: 3px; height: 18px;
+  background: var(--primary);
+  border-radius: 2px; flex-shrink: 0;
+}
+
+/* ── Flowchart (monospace tree style) ── */
+.flowchart {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 10px; padding: 24px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px; line-height: 2; color: var(--text-muted);
+}
+
+.flowchart .q         { color: var(--text); font-weight: 600; }
+.flowchart .ans       { color: var(--green); }
+.flowchart .style-ref { color: var(--primary-light); font-weight: 600; }
+.flowchart .desc      { color: #5c6370; }
